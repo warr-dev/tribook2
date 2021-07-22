@@ -24,6 +24,9 @@ Route::middleware('auth:sanctum')->get('/checksession', function (Request $reque
 Route::post('/register', ['uses'=> '\App\Http\Controllers\AuthController@register']);
 Route::post('/login', ['uses'=> '\App\Http\Controllers\AuthController@login']);
 Route::post('/verify', ['uses'=> '\App\Http\Controllers\AuthController@verify']);
+Route::post('/resendcode', ['uses'=> '\App\Http\Controllers\AuthController@gencode']);
+Route::post('/verifycode', ['uses'=> '\App\Http\Controllers\AuthController@verifycode']);
+Route::post('/changepass', ['uses'=> '\App\Http\Controllers\AuthController@changepass']);
 // Route::get('/test/{id}', ['uses'=> '\App\Http\Controllers\TricycleController@show']);
 
 Route::get('/drivers', ['uses'=> '\App\Http\Controllers\TricycleController@index']);

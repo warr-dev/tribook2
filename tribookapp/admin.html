@@ -149,8 +149,10 @@
         <thead>
           <tr class="rounded-lg text-sm font-medium text-gray-700 text-left" style="font-size: 0.9674rem">
             <th class="px-4 py-2 " style="background-color:#f8f8f8">Pickup Point</th>
+            <th class="px-4 py-2 " style="background-color:#f8f8f8">Destination</th>
             <th class="px-4 py-2 " style="background-color:#f8f8f8">Passenger Count</th>
-            <th class="px-4 py-2 " style="background-color:#f8f8f8">Date</th>
+            <th class="px-4 py-2 " style="background-color:#f8f8f8">Date Time</th>
+            <th class="px-4 py-2 " style="background-color:#f8f8f8">CP Number</th>
             <th class="px-4 py-2 " style="background-color:#f8f8f8">Status</th>
           </tr>
         </thead>
@@ -474,6 +476,7 @@
           success: function(result){
             toast(result.msg)
             driverlist()
+            clearfields();
           },
           error:(err)=>showinputerrors(err)
         })
@@ -561,8 +564,10 @@
              $('#tabletransaction').append(`
                <tr>
                    <td class="px-4 py-4">${transaction.pickup}</td>
+                   <td class="px-4 py-4">${transaction.destination}</td>
                    <td class="px-4 py-4">${transaction.passengers_count}</td>
-                   <td class="px-4 py-4">${date.toString()}</td>
+                   <td class="px-4 py-4">${date.toString()} ${transaction.time}</td>
+                   <td class="px-4 py-4">${transaction.client.cpnum}</td>
                    <td class="px-4 py-4">${transaction.status}</td>
                    <td class="px-4 py-4">${add}</td>
                </tr>
@@ -704,6 +709,10 @@
         window.fn.hideDialog = function (id) {
           document.getElementById(id).hide();
         };
+        
+     const clearfields=()=>{
+      $('input').val('')
+    }
       </script>
 
 </body>

@@ -38,14 +38,14 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:users',
             'cpnum' => 'required|string|max:255',
-            'email' => 'required|email',
+            // 'email' => 'required|email',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
         $user = User::create([
                 'username' => $validatedData['username'],
                 'cpnum' => $validatedData['cpnum'],
-                'email' => $validatedData['email'],
+                // 'email' => $validatedData['email'],
                 'password' => Hash::make($validatedData['password']),
                 'code' => Str::random(4),
             ]);
@@ -54,7 +54,7 @@ class AuthController extends Controller
                     'name' => $validatedData['name'],
                     'user_id' => $user->id,
                 ]);
-        $ms="Triser: your code is ".$user->code;
+        $ms="Tribook: your code is ".$user->code;
         $this->itexmo($user->cpnum,$ms);
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -107,7 +107,7 @@ class AuthController extends Controller
         $data=[
             'username'=>$request->input('username'),
             'cpnum'=>$request->input('cpnum'),
-            'email'=>$request->input('email'),
+            // 'email'=>$request->input('email'),
         ];
         if($request->input('password'))
             $data['password']=$request->input('password');
@@ -140,5 +140,56 @@ class AuthController extends Controller
         );
         $context  = stream_context_create($param);
         return file_get_contents($url, false, $context);
+    }
+    public function gencode(Request $request)
+    {
+        $user=User::where('cpnum',$request->input('cpnum'))->first();
+        if(!$user){
+            return \response([
+                'status'=>'failed',
+                'msg'=> 'number not registered'
+            ],404);
+        }
+        $user->code=Str::random(4);
+        $user->save();
+        $ms="Tribook: your code is ".$user->code;
+        $this->itexmo($user->cpnum,$ms);
+        return \response([
+            'status'=>'success',
+            'msg'=> 'code was sent'
+        ]);
+    }
+    public function verifycode(Request $request)
+    {
+        $validatedData = $request->validate([
+            'cpnum' => 'required',
+            'code' => 'required',
+        ]);
+        $user=User::where('cpnum',$request->input('cpnum'))->first();
+        if($user->code!=$validatedData['code']){
+            return \response([
+                'status'=>'failed',
+                'msg'=> 'Code was not valid'
+            ],403);
+        }
+        return \response([
+            'status'=>'success',
+            'msg'=> 'The code was verified'
+        ]);
+    }
+    public function changepass(Request $request)
+    {
+        $validatedData = $request->validate([
+            'cpnum' => 'required',
+            'code' => 'required',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+        $user=User::where('cpnum',$request->input('cpnum'))->where('cpnum',$request->input('cpnum'))->first();
+        $user->password=Hash::make($validatedData['password']);
+        $user->save();
+        return \response([
+            'status'=>'success',
+            'msg'=> 'password was updated successfully'
+        ]);
     }
 }

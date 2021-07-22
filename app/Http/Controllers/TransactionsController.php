@@ -6,6 +6,7 @@ use App\Models\Tricycle;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class TransactionsController extends Controller
 {
@@ -25,20 +26,21 @@ class TransactionsController extends Controller
             'passengers_count' => '',
             'notes' => '',
             'isbooking' => '',
-            'date' => 'required_if:isbooking,on|date',
-            'time' => 'required_if:isbooking,on ',
+            'date' => '',
+            'time' => '',
         ]);
-        $validatedData['status']=isset($validatedData['isbooking'])?'scheduled':'for pickup';
+        // $validatedData['status']=isset($validatedData['isbooking'])?'scheduled':'for pickup';
         unset($validatedData['isbooking']);
         $book=new Transactions(
             array_merge(
                 $validatedData,
                 [
                     'user_id'=>auth('sanctum')->user()->id,
+                    'status'=>'pending',
                 ]
             ));
         $book->save();
-        return \response(['msg'=>'Applied for service successful','status'=>'success']);
+        return \response(['msg'=>'Application for service successful','status'=>'success']);
     }
     public function assign(Request $request,Transactions $id)
     {

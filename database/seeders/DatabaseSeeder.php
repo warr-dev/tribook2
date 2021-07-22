@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
         $user->acctype='admin';
         $user->status='verified';
         $user->cpnum='09321465987';
-        $user->email='email@example';
+        // $user->email='email@example';
         $user->password=Hash::make('admin123');
         $user->save();
 

@@ -245,6 +245,7 @@
                       window.location.href="#home"
                       toast(res.msg)
                       transactions();
+                      clearfields();
                     }
                   },
                   error:showinputerrors
@@ -317,6 +318,30 @@
       </form>
       </ons-modal>
       
+      <ons-modal id="changepass" onclick="">
+        <form id="frmchangepass">
+          <div style="text-align: center; margin-top: 100px; background-color:white;padding:3rem 0;color:black">
+            <h2>Change Password</h2>
+              <p>
+                <ons-input
+                class="inp" name="password" placeholder="New Password" type="password" modifier="underbar"></ons-input>
+              </p>
+              <p>
+                <ons-input
+                class="inp" name="password_confirmation" placeholder="Confirm Password" type="password" modifier="underbar"></ons-input>
+              </p>
+              <p>
+              <ons-button
+              class="inp but" onclick="changepass()" >Done</ons-button>
+              </p>
+              <p>
+              <ons-button
+              class="inp but" onclick="fn.hideDialog('changepass')" >Cancel</ons-button>
+              </p>
+          </div>
+      </form>
+      </ons-modal>
+      
       <ons-modal id="viewdriver" onclick="">
         <form id="frmlogin">
           <div style="text-align: center; margin-top: 100px; background-color:white;padding:3rem 0">
@@ -375,10 +400,12 @@
         <thead>
           <tr class="rounded-lg text-sm font-medium text-gray-700 text-left" style="font-size: 0.9674rem">
             <th class="px-4 py-2 " style="background-color:#f8f8f8">Pickup Point</th>
+            <th class="px-4 py-2 " style="background-color:#f8f8f8">Destination</th>
             <th class="px-4 py-2 " style="background-color:#f8f8f8">Assigned to</th>
             <th class="px-4 py-2 " style="background-color:#f8f8f8">Passenger Count</th>
-            <th class="px-4 py-2 " style="background-color:#f8f8f8">Date</th>
+            <th class="px-4 py-2 " style="background-color:#f8f8f8">Date Time</th>
             <th class="px-4 py-2 " style="background-color:#f8f8f8">Status</th>
+            <th class="px-4 py-2 " style="background-color:#f8f8f8">Notes</th>
           </tr>
         </thead>
         <tbody class="text-sm font-normal text-gray-700" id="tabletransaction">
@@ -455,18 +482,6 @@
                             </p>
                         
                         <p>
-                          <p>
-                              <ons-input
-                              class="inp"
-                              name="email"
-                                  placeholder="Email Address"
-                                  type="email"
-                                  modifier="underbar"
-                              >
-                              </ons-input>
-                              </p>
-                          
-                          <p>
                         <ons-input
                         class="inp" name="username" placeholder="Username" modifier="underbar"></ons-input>
                         </p>
@@ -541,10 +556,53 @@
                     <ons-button
                     class="inp but" onclick="login()">Sign in</ons-button>
                     </p>
+                    <p>
+                    <ons-button
+                    class="inp but" onclick="fn.pushPage({'id': 'forgot.html', 'title': 'Forgot Password'})">Forgot Password</ons-button>
+                    </p>
                 </div>
             </form>
         <script>
-       
+        </script>
+    </ons-page>
+      </template>
+            
+      <template id="forgot.html">
+        <ons-page>
+          <ons-toolbar class="header">
+            <div class="left">
+              <ons-back-button>Back</ons-back-button>
+            </div>
+            <div class="center"></div>
+          </ons-toolbar>
+            <form id="frmforgot">
+                <div style="text-align: center; margin-top: 100px">
+                  <img src="logo.png" alt="logo" style="margin:0 auto">
+                    <h3>Forgot Pasword</h3>
+                    
+                    <p>
+                    <ons-input name="cpnum" id="fcpnum" placeholder="CP #" modifier="underbar"></ons-input>
+                    <ons-button onclick="sendcode()">Send Code</ons-button>
+                    </p>
+                    <p>
+                    <ons-input
+                        class="inp"
+                        id="code"
+                        name="code"
+                        placeholder="Code Recieved"
+                        type="text"
+                        modifier="underbar"
+                    >
+                    </ons-input>
+                    </p>
+                
+                    <p>
+                    <ons-button
+                    class="inp but" onclick="verifycode()">Verify</ons-button>
+                    </p>
+                </div>
+            </form>
+        <script>
         </script>
     </ons-page>
       </template>
@@ -586,18 +644,6 @@
                       </p>
                   
                   <p>
-                    <p>
-                        <ons-input
-                        class="inp"
-                        name="email"
-                            id="edemail"
-                            placeholder="Email Address"
-                            type="email"
-                            modifier="underbar"
-                        >
-                        </ons-input>
-                        </p>
-                    
                     <p>
                   <ons-input
                   class="inp" name="username" id="edusername" placeholder="Username" modifier="underbar"></ons-input>
@@ -774,10 +820,12 @@
              $('#tabletransaction').append(`
                <tr>
                    <td class="px-4 py-4">${transaction.pickup}</td>
+                   <td class="px-4 py-4">${transaction.destination}</td>
                    <td class="px-4 py-4">${drivers.join(', ')}</td>
                    <td class="px-4 py-4">${transaction.passengers_count}</td>
-                   <td class="px-4 py-4">${date.toString()}</td>
+                   <td class="px-4 py-4">${date.toString()} ${transaction.time}</td>
                    <td class="px-4 py-4">${transaction.status}</td>
+                   <td class="px-4 py-4">${transaction.notes}</td>
                    <td class="px-4 py-4">${action}</td>
                </tr>
              `)
@@ -788,6 +836,9 @@
             $('#tabletransaction').html('error fetching transaction list')
          }
        })
+     }
+     const clearfields=()=>{
+       $('input').val('')
      }
      const cancel=(id)=>{
       ajaxreq({
@@ -864,6 +915,7 @@
                 back(); 
                 ons.notification.toast('Login Successful', { timeout: 1000, animation: 'fall' })
                 transactions();
+                clearfields();
             },
           error: (e)=>{
             showinputerrors(e)
@@ -889,6 +941,7 @@
               //toast('Registration Successful')
               // checksession();
               //window.location.reload();
+              clearfields();
               },
             error:showinputerrors
         });
@@ -979,7 +1032,6 @@
             if(res.status=='successful'){
               $('#edname').val(res.profile.name??'N/A')
               $('#edcpnum').val(res.user.cpnum)
-              $('#edemail').val(res.user.email)
               $('#edusername').val(res.user.username)
             }
           },
@@ -997,6 +1049,7 @@
             console.log(res)
             if(res.status=='successful'){
               toast(res.msg);
+              clearfields();
               back();
             }
           },
@@ -1022,12 +1075,63 @@
           }
         })
       }
-      /*const resendcode=()=>{
+      const verifycode=()=>{
         ajaxreq({
-          url: "/api/verify",
+          url: "/api/verifycode",
           type:'post',
+          data:$("#frmforgot").serialize(),
+          success: function(res){
+            if(res.status=='success'){
+              fn.showDialog('changepass')
+            }
+          },
+          error:(err)=>{
+            showinputerrors(err)
+            err.responseJSON.msg && toast(err.responseJSON.msg)
+            //toast("an error occured")
+          }
         })
-      }*/
+      }
+      const changepass=()=>{
+       // Create an FormData object 
+        var fd = new FormData(document.getElementById('frmforgot'));
+        let fd2 = $("#frmchangepass").serializeArray();
+        for (let i=0; i<fd2.length; i++)
+            fd.append(fd2[i].name, fd2[i].value);
+ 
+        ajaxreq({
+          url: "/api/changepass",
+          type:'post',
+          data:fd,
+          processData: false,
+          contentType: false,
+          success: function(res){
+            res.msg && toast(res.msg)
+            fn.hideDialog('changepass')
+            window.location.reload()
+          },
+          error:(res)=>{
+            showinputerrors(res)
+            //toast("an error occured")
+          }
+        })
+      }
+      const sendcode=()=>{
+        ajaxreq({
+          url: "/api/resendcode",
+          type:'post',
+          data:$("#frmforgot").serialize(),
+          success:(res)=>{
+            res.msg && toast(res.msg)
+            //fn.showDialog('changepass')
+          },
+          error:(err)=>{
+            if(err.responseJSON.msg){
+              toast(err.responseJSON.msg)
+            }
+          }
+        })
+      }
       </script>
 
 </body>

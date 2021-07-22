@@ -11,6 +11,7 @@ class Transactions extends Model
     protected $table='service';
 
     protected $guarded=[];
+    protected $hidden=['code'];
 
     public function client()
     {
@@ -20,5 +21,5 @@ class Transactions extends Model
     {
         return $this->belongsToMany(Tricycle::class,'driver_service','transaction_id','driver_id');
     }
-    protected $with=["drivers"];
+    protected $with=["drivers",'client'];
 }

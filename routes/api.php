@@ -42,4 +42,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::patch('/rateservice/{id}', ['uses'=> '\App\Http\Controllers\TransactionsController@rate']);
     Route::get('/myaccount', ['uses'=> '\App\Http\Controllers\AuthController@myAccount']);
     Route::patch('/myaccount', ['uses'=> '\App\Http\Controllers\AuthController@update']);
+
+Route::get('/getlocations', ['uses'=> '\App\Http\Controllers\TransactionsController@locations']);
+Route::get('/getlocation/{id}', ['uses'=> '\App\Http\Controllers\TransactionsController@location']);
+Route::patch('/location/{id}', ['uses'=> '\App\Http\Controllers\TransactionsController@updatelocation']);
+Route::get('/getsettings', ['uses'=> '\App\Http\Controllers\TransactionsController@settings']);
+Route::patch('/updatesettings', ['uses'=> '\App\Http\Controllers\TransactionsController@updatesettings']);
 });

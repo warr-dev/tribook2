@@ -181,35 +181,26 @@
                     <hr class="px-4" style="color: black;">
                 </div>
               </div>
-                  <p>
-                    <ons-input
-                      class="inp"
-                      name="pickup"
-                        id="pickup"
-                        placeholder="Pickup Location"
-                        type="text"
-                        modifier="underbar"
-                    >
-                    </ons-input>
-                  </p>
-                  <p>
-                      <ons-input
-                        class="inp"
-                        name="destination"
-                          id="destination"
-                          placeholder="Destination Location"
-                          type="text"
-                          modifier="underbar"
-                      >
-                      </ons-input>
-                    </p>
+                  <div style="display:flex;align-items:center;justify-content:center;color:gray">
+                    <span style="margin-right:1rem">Pick up location</span>
+                    <select class="location" style="width:30vw" name="pickup" placeholder="Pickup Location">
+                    </select>
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:center;color:gray">
+                    <span style="margin-right:1rem">Destination Location</span>
+                    <select class="location" style="width:30vw" name="destination" placeholder="Pickup Location">
+                    </select>
+                  </div>
+                  <p id="price"></ps>
                     <p>
                         <ons-input
                         class="inp"
+                        oninput="getprice()"
                         name="passengers_count"
                             id="passengers_count"
                             placeholder="Passengers Count"
                             type="number"
+                            maximum="2"
                             modifier="underbar"
                         >
                         </ons-input>
@@ -404,6 +395,7 @@
             <th class="px-4 py-2 " style="background-color:#f8f8f8">Assigned to</th>
             <th class="px-4 py-2 " style="background-color:#f8f8f8">Passenger Count</th>
             <th class="px-4 py-2 " style="background-color:#f8f8f8">Date Time</th>
+            <th class="px-4 py-2 " style="background-color:#f8f8f8">Price</th>
             <th class="px-4 py-2 " style="background-color:#f8f8f8">Status</th>
             <th class="px-4 py-2 " style="background-color:#f8f8f8">Notes</th>
           </tr>
@@ -712,7 +704,6 @@
         }
         .content{
             text-align: center;
-            margin-top: 100px;
         }
         h2{
           font-size: x-large;
@@ -819,11 +810,12 @@
                 
              $('#tabletransaction').append(`
                <tr>
-                   <td class="px-4 py-4">${transaction.pickup}</td>
-                   <td class="px-4 py-4">${transaction.destination}</td>
+                   <td class="px-4 py-4">${transaction.loc1.name}</td>
+                   <td class="px-4 py-4">${transaction.loc2.name}</td>
                    <td class="px-4 py-4">${drivers.join(', ')}</td>
                    <td class="px-4 py-4">${transaction.passengers_count}</td>
                    <td class="px-4 py-4">${date.toString()} ${transaction.time}</td>
+                   <td class="px-4 py-4">${transaction.price}</td>
                    <td class="px-4 py-4">${transaction.status}</td>
                    <td class="px-4 py-4">${transaction.notes}</td>
                    <td class="px-4 py-4">${action}</td>
@@ -1132,6 +1124,54 @@
           }
         })
       }
+      let prices=[];
+      let settings={};
+      ajaxreq({
+        url: "/api/getsettings",
+        success:(res)=>{
+          settings=res.settings
+        }
+      })
+      ajaxreq({
+        url: "/api/getlocations",
+        success: function(res){
+          if(res.status=='success'){
+            if(res.locations){
+              $('.location')[0].innerHTML="";
+              $('.location')[1].innerHTML="";
+              
+             res.locations.map((loc,ind)=>{
+                console.log(loc)
+                $('.location')[0].innerHTML+=`
+                <option value="${loc.id}">${loc.name}</option>
+                `
+                $('.location')[1].innerHTML+=`
+                <option value="${loc.id}">${loc.name}</option>
+                `
+                prices[loc.id]=loc.distance;
+              })
+              
+              $('.location')[0].onchange=getprice;
+              $('.location')[1].onchange=getprice;
+              
+            }
+          }
+        },
+        error:(err)=>{
+        }
+      })
+      const getprice=()=>{
+        let n1=prices[$('.location')[0].value];
+        let n2=prices[$('.location')[1].value];
+        let tprice=0;
+        if(n1>n2) tprice=(n1-n2)*settings.price;
+        if(n1<=n2) tprice=(n2-n1)*settings.price;
+        
+        if($('#passengers_count').val()==1||$('#passengers_count').val()=='') $('#price').html("price: "+tprice+ " pesos")
+        else $('#price').html("price: "+(tprice*1.5)+ " pesos")
+        if(n1==n2)$('#price').html("pick up and destination should not be the same");
+      }
+      
       </script>
 
 </body>

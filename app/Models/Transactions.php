@@ -21,5 +21,13 @@ class Transactions extends Model
     {
         return $this->belongsToMany(Tricycle::class,'driver_service','transaction_id','driver_id');
     }
-    protected $with=["drivers",'client'];
+    public function loc1()
+    {
+        return $this->belongsTo(Locations::class,'pickup');
+    }
+    public function loc2()
+    {
+        return $this->belongsTo(Locations::class,'destination');
+    }
+    protected $with=["drivers",'client','loc1','loc2'];
 }

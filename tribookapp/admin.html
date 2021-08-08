@@ -93,10 +93,14 @@
       
           <ons-list-title style="margin-top: 10px">Account</ons-list-title>
           <ons-list>
-            <ons-list-item onclick="logout()">
-              <div class="left">
-                <ons-icon fixed-width class="list-item__icon" icon="ion-logo-twitter"></ons-icon>
+            
+            <ons-list-item onclick="fn.pushPage({'id': 'settings.html', 'title': 'Settings'}, 'lift-ios');loadsettings();">
+              <div class="center">
+                Settings
               </div>
+            </ons-list-item>
+
+            <ons-list-item onclick="logout()">
               <div class="center">
                 Logout
               </div>
@@ -400,6 +404,80 @@
           </div>
       </form>
       </ons-modal>
+      <template id="settings.html">
+        <ons-page>
+          <ons-toolbar class="header">
+            <div class="left" style="color: white;"> 
+              <ons-back-button>Back</ons-back-button>
+            </div>
+            <div class="center"></div>
+          </ons-toolbar>
+            <form id="frmeditsettings">
+                <div style="text-align: center;">
+                <h2>Settings</h2>
+                  
+                <p>
+                  <ons-input
+                  class="inp"
+                    name="name"
+                    id="pricefield"
+                      placeholder="Price per km"
+                      type="text"
+                      modifier="underbar"
+                  >
+                  </ons-input>
+                  </p>
+                  <ons-button
+              class="inp but" onclick="updateprice()" >Update Price</ons-button>
+                  <h3>Locations Available</h3>
+                  <ul id="locations"></ul>
+                </div>
+            </form>
+        <script>
+       
+        </script>
+    </ons-page>
+      </template>
+      
+      <ons-modal id="editlocation" >
+        <form id="frmeditlocation">
+          <div style="text-align: center; background-color:white;padding:1rem 0;">
+            <h2 style="color:black">Edit Location</h2>
+               
+            <p>
+              <ons-input
+              class="inp"
+                name="name"
+                id="namefield"
+                  placeholder="Location Name"
+                  type="text"
+                  modifier="underbar"
+              >
+              </ons-input>
+              </p>
+               
+              <p>
+                <ons-input
+                class="inp"
+                  name="distance"
+                    id="distancefield"
+                    placeholder="Distance to Calapan Terminal"
+                    type="text"
+                    modifier="underbar"
+                >
+                </ons-input>
+                </p>
+          
+              <p>
+              <ons-button
+              class="inp but" onclick="updatelocation()" >Update</ons-button>
+              <ons-button
+              class="inp but" onclick="fn.hideDialog('editlocation')" >Cancel</ons-button>
+              </p>
+          </div>
+      </form>
+      </ons-modal>
+      
 
 
 
@@ -563,8 +641,8 @@
                add+=(transaction.status=='pending')?`<button class="bg-blue-500 text-white px-6 py-2 rounded font-medium mx-3 hover:bg-red-600 transition duration-200 each-in-out" onclick="assign(${transaction.id})">Assign</button>`:''
              $('#tabletransaction').append(`
                <tr>
-                   <td class="px-4 py-4">${transaction.pickup}</td>
-                   <td class="px-4 py-4">${transaction.destination}</td>
+                   <td class="px-4 py-4">${transaction.loc1.name}</td>
+                   <td class="px-4 py-4">${transaction.loc2.name}</td>
                    <td class="px-4 py-4">${transaction.passengers_count}</td>
                    <td class="px-4 py-4">${date.toString()} ${transaction.time}</td>
                    <td class="px-4 py-4">${transaction.client.cpnum}</td>
@@ -712,6 +790,79 @@
         
      const clearfields=()=>{
       $('input').val('')
+    }
+    let locid;
+    let settings={};
+    const loadsettings=()=>{
+    ajaxreq({
+      url: "/api/getsettings",
+      success:(res)=>{
+        settings=res.settings
+        $('#pricefield').val(res.settings.price)
+      }
+    })
+    ajaxreq({
+      url: "/api/getlocations",
+      success: function(res){
+        if(res.status=='success'){
+          if(res.locations){
+            res.locations.map((loc)=>{
+              $('#locations').append(`
+                  <li onclick="locid=${loc.id};fn.showDialog('editlocation');loadlocation();">${loc.name}</li>
+              `)
+            })
+           
+          }
+        }
+      },
+      error:(err)=>{
+      }
+    })
+
+    }
+    const loadlocation=()=>{
+      ajaxreq({
+        url: "/api/getlocation/"+locid,
+        success:(res)=>{
+          if(res.status=='success'){
+            if(res.location){
+              $('#namefield').val(res.location.name)
+              $('#distancefield').val(res.location.distance)
+            }
+          }
+        }
+      })
+    }
+    const updatelocation=()=>{
+      ajaxreq({
+        url: "/api/location/"+locid,
+        type:'patch',
+        data:$('#frmeditlocation').serialize(),
+        success:(res)=>{
+          if(res.status=='success'){
+            toast("Updated Successfully")
+            fn.hideDialog('editlocation')
+          }
+        },
+        error:(err)=>{
+          showinputerrors(err);
+        }
+      })
+    }
+    const updateprice=()=>{
+      ajaxreq({
+        url: "/api/updatesettings",
+        type:'patch',
+        data:{price:$('#pricefield').val()},
+        success:(res)=>{
+          if(res.status=='success'){
+            toast("Updated Successfully")
+          }
+        },
+        error:(err)=>{
+          showinputerrors(err);
+        }
+      })
     }
       </script>
 

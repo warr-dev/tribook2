@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 use App\Models\Transactions;
 use App\Models\Tricycle;
+use App\Models\Locations;
+use App\Models\Settings;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -21,20 +23,21 @@ class TransactionsController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'pickup' => 'required|string|max:255',
-            'destination' => 'required|string|max:255',
-            'passengers_count' => '',
+            'pickup' => 'required|numeric',
+            'destination' => 'required|numeric',
+            'passengers_count' => 'numeric|max:2',
             'notes' => '',
             'isbooking' => '',
             'date' => '',
             'time' => '',
         ]);
-        // $validatedData['status']=isset($validatedData['isbooking'])?'scheduled':'for pickup';
+        $validatedData['status']=isset($validatedData['isbooking'])?'pending':'for pickup';
         unset($validatedData['isbooking']);
         $book=new Transactions(
             array_merge(
                 $validatedData,
                 [
+                    'price'=>Locations::getprice(Locations::find($validatedData['pickup']),Locations::find($validatedData['destination']),$validatedData['passengers_count']),
                     'user_id'=>auth('sanctum')->user()->id,
                     'status'=>'pending',
                 ]
@@ -95,6 +98,38 @@ Contact Number/s :'.implode(', ',$drivercpnum);
         $id->save();
         return \response(['msg'=>'Transaction marked as done','status'=>'success']);
     }
+
+
+    public function locations()
+    {
+        return \response(['locations'=>Locations::all(),'status'=>'success']);
+    }
+    public function settings()
+    {
+        return \response(['settings'=>Settings::select('price')->first(),'status'=>'success']);
+    }
+    public function location(Locations $id)
+    {
+        return \response(['location'=>$id,'status'=>'success']);
+    }
+    public function updatelocation(Request $request,Locations $id)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string',
+            'distance' => 'required|numeric',
+        ]);
+        $id->update($validatedData);
+        return \response(['location'=>$id,'status'=>'success']);
+    }
+    public function updatesettings(Request $request)
+    {
+        $validatedData = $request->validate([
+            'price' => 'required|numeric',
+        ]);
+        $settings=Settings::first();
+        $settings->update($validatedData);
+        return \response(['status'=>'success']);
+    }
     
 //     public function test()
 //     {
@@ -111,7 +146,7 @@ Contact Number/s :'.implode(', ',$drivercpnum);
     // ITEXMO SEND SMS API - PHP - CURL-LESS METHOD
     // Visit www.itexmo.com/developers.php for more info about this API
     //##########################################################################
-    function itexmo($number,$message,$apicode='ST-PETRE365581_JG6XH',$passwd='5w[1@87]8$'){
+    function itexmo($number,$message,$apicode='ST-BENED777092_6WFM9',$passwd='2z8ef56c!%'){
         $url = 'https://www.itexmo.com/php_api/api.php';
         $itexmo = array(
             '1' => $number, 

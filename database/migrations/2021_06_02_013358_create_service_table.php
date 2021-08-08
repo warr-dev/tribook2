@@ -16,10 +16,11 @@ class CreateServiceTable extends Migration
         Schema::create('service', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('user_id');
-            $table->string('pickup');
-            $table->string('destination');
+            $table->unsignedInteger('pickup');
+            $table->unsignedInteger('destination');
             $table->unsignedInteger('passengers_count')->default(1);
             $table->string('status')->default('pending');
+            $table->decimal('price',10,2);
             $table->date('date')->nullable();
             $table->time('time')->nullable();
             $table->text('notes')->nullable();

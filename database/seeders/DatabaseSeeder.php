@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Tricycle;
 
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -27,7 +28,8 @@ class DatabaseSeeder extends Seeder
         $user->save();
 
         Tricycle::factory(50)->create();
-
+        $this->call(LocationSeeder::class);
+        $this->call(SettingsSeeder::class);
         
     }
 }

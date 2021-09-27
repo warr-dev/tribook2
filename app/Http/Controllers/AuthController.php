@@ -76,11 +76,18 @@ class AuthController extends Controller
     }
     public function myAccount()
     {
-        return \response([
-            'status'=>'successful',
-            'user'=> auth('sanctum')->user(),
-            'profile'=> auth('sanctum')->user()->profile
-        ]);
+        if(auth('sanctum')->user()->acctype=='driver')
+            return \response([
+                'status'=>'successful',
+                'user'=> auth('sanctum')->user(),
+                'profile'=> auth('sanctum')->user()->driver
+            ]);
+        else
+            return \response([
+                'status'=>'successful',
+                'user'=> auth('sanctum')->user(),
+                'profile'=> auth('sanctum')->user()->profile
+            ]);
     }
     public function verify(Request $request)
     {
@@ -110,9 +117,12 @@ class AuthController extends Controller
             // 'email'=>$request->input('email'),
         ];
         if($request->input('password'))
-            $data['password']=$request->input('password');
+            $data['password']=Hash::make($request->input('password'));
         $user->update($data);
-        $user->profile->first()->update(['name'=>$request->input('name')]);
+        if($user->acctype=='driver')
+            $user->driver->first()->update(['name'=>$request->input('name')]);
+        else
+            $user->profile->first()->update(['name'=>$request->input('name')]);
         return \response([
             'status'=>'successful',
             'msg'=> "Profile Updated Successfully",

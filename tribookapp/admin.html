@@ -94,7 +94,13 @@
           <ons-list-title style="margin-top: 10px">Account</ons-list-title>
           <ons-list>
             
-            <ons-list-item onclick="fn.pushPage({'id': 'settings.html', 'title': 'Settings'}, 'lift-ios');loadsettings();">
+            <ons-list-item onclick="fn.pushPage({'id': 'reports.html', 'title': 'Reports'}, 'lift-ios');loadreports()">
+              <div class="center">
+                Reports
+              </div>
+            </ons-list-item>
+
+            <ons-list-item onclick="fn.pushPage({'id': 'settings.html', 'title': 'Settings'}, 'lift-ios');loadsettings();loadlocations();">
               <div class="center">
                 Settings
               </div>
@@ -232,7 +238,7 @@
           <form id="frmadddriver">
                 <div style="text-align: center; margin-top: 100px">
                     <h3>Add Driver</h3>
-                    
+                    <h4>Personal Information</h4>
                     <p>
                     <ons-input
                     class="inp" name="name" placeholder="Full Name" modifier="underbar"></ons-input>
@@ -244,6 +250,20 @@
                     <p>
                     <ons-input
                     class="inp" name="cpnum" placeholder="Cellphone Number" modifier="underbar"></ons-input>
+                    </p>
+                    <hr>
+                    <h4>Account Information</h4>
+                    <p>
+                    <ons-input
+                    class="inp" name="username" placeholder="Username" modifier="underbar"></ons-input>
+                    </p>
+                    <p>
+                    <ons-input
+                    class="inp" name="password" type="password" placeholder="Password" modifier="underbar"></ons-input>
+                    </p>
+                    <p>
+                    <ons-input
+                    class="inp" name="password_confirmation" type="password" placeholder="Confirm Password" modifier="underbar"></ons-input>
                     </p>
                 
                 
@@ -369,7 +389,7 @@
       </template>
       
       <ons-modal id="assign" onclick="//fn.hideDialog('assign')">
-        <form id="frmlogin">
+        <form>
           <div style="text-align: center; background-color:white;padding:1rem 0;">
             <h2 style="color:black">Assign driver/s</h2>
               <ons-list-item>
@@ -404,6 +424,35 @@
           </div>
       </form>
       </ons-modal>
+
+      
+      <ons-modal id="viewreport" onclick="">
+          <div style="text-align: center; background-color:white;padding:1rem 0;color:black">
+            
+            <h1 class="modalheader">View Report</h2>
+              <table style="width:50%;margin:0 auto">
+                <tr>
+                  <td>Name</td>
+                  <td id="reportname"></td>
+                </tr>
+                <tr>
+                  <td>Subject</td>
+                  <td id="reportsubject"></td>
+                </tr>
+                <tr>
+                  <td>Content</td>
+                  <td id="reportcontent"></td>
+                </tr>
+              </table>
+              <div id="reportaction"></div>
+              <p>
+              <ons-button
+              class="inp but" onclick="fn.hideDialog('viewreport')" >Close</ons-button>
+              </p>
+          </div>
+      </ons-modal>
+
+
       <template id="settings.html">
         <ons-page>
           <ons-toolbar class="header">
@@ -431,6 +480,10 @@
               class="inp but" onclick="updateprice()" >Update Price</ons-button>
                   <h3>Locations Available</h3>
                   <ul id="locations"></ul>
+                  <p>
+                    <ons-button
+                    class="inp but" onclick="fn.showDialog('addlocation')" >Add Location</ons-button>
+                  </p>
                 </div>
             </form>
         <script>
@@ -462,7 +515,7 @@
                   name="distance"
                     id="distancefield"
                     placeholder="Distance to Calapan Terminal"
-                    type="text"
+                    type="number"
                     modifier="underbar"
                 >
                 </ons-input>
@@ -472,13 +525,88 @@
               <ons-button
               class="inp but" onclick="updatelocation()" >Update</ons-button>
               <ons-button
+              class="inp but" onclick="deletelocation()" >Delete</ons-button>
+              <ons-button
               class="inp but" onclick="fn.hideDialog('editlocation')" >Cancel</ons-button>
               </p>
           </div>
       </form>
       </ons-modal>
-      
 
+       
+      <ons-modal id="addlocation" >
+        <form id="frmaddlocation">
+          <div style="text-align: center; background-color:white;padding:1rem 0;">
+            <h1  style="color:black">Add Location</h1>
+               
+            <p>
+              <ons-input
+              class="inp"
+                name="name"
+                id="namefield"
+                  placeholder="Location Name"
+                  type="text"
+                  modifier="underbar"
+              >
+              </ons-input>
+              </p>
+               
+              <p>
+                <ons-input
+                class="inp"
+                  name="distance"
+                    id="distancefield"
+                    placeholder="Distance to Calapan Terminal"
+                    type="number"
+                    modifier="underbar"
+                >
+                </ons-input>
+                </p>
+          
+              <p>
+              <ons-button
+              class="inp but" onclick="addlocation()" >Add</ons-button>
+              <ons-button
+              class="inp but" onclick="fn.hideDialog('addlocation')" >Cancel</ons-button>
+              </p>
+          </div>
+      </form>
+      </ons-modal>
+      
+         
+      <template id="reports.html">
+        <ons-page>
+                
+          <ons-toolbar class="header">
+            <div class="left" style="color: white;"> 
+              <ons-back-button>Back</ons-back-button>
+            </div>
+            <div class="center"></div>
+          </ons-toolbar>
+
+	    <div class="content">
+            <center>
+              <div class="table-cont">
+              
+      <table class="table-auto border-collapse w-full">
+        <thead>
+          <tr class="rounded-lg text-sm font-medium text-gray-700 text-left" style="font-size: 0.9674rem">
+            <th class="px-4 py-2 " style="background-color:#f8f8f8">Name</th>
+            <th class="px-4 py-2 " style="background-color:#f8f8f8">Subject</th>
+            <th class="px-4 py-2 " style="background-color:#f8f8f8">Status</th>
+            <th class="px-4 py-2 " style="background-color:#f8f8f8">Action</th>
+          </tr>
+        </thead>
+        <tbody class="text-sm font-normal text-gray-700" id="tablereports">
+          
+        </tbody>
+      </table>
+
+              </div>
+            </center>
+        </div><!-- /content -->
+        </ons-page>
+      </template>
 
 
       
@@ -526,6 +654,12 @@
   tbody tr td:first-child { border-top-left-radius: 5px; border-bottom-left-radius: 0px;}
   tbody tr td:last-child { border-top-right-radius: 5px; border-bottom-right-radius: 0px;}
   
+  .modalheader{
+    color:black;
+    font-size:2rem;
+    font-weight:bold;
+    padding:2rem;
+  }
   
       </style>
       
@@ -552,7 +686,7 @@
           type:'post',
           data:$('#frmadddriver').serialize(),
           success: function(result){
-            toast(result.msg)
+            toast(result.message)
             driverlist()
             clearfields();
           },
@@ -793,33 +927,40 @@
     }
     let locid;
     let settings={};
-    const loadsettings=()=>{
-    ajaxreq({
-      url: "/api/getsettings",
-      success:(res)=>{
-        settings=res.settings
-        $('#pricefield').val(res.settings.price)
-      }
-    })
-    ajaxreq({
-      url: "/api/getlocations",
-      success: function(res){
-        if(res.status=='success'){
-          if(res.locations){
-            res.locations.map((loc)=>{
-              $('#locations').append(`
-                  <li onclick="locid=${loc.id};fn.showDialog('editlocation');loadlocation();">${loc.name}</li>
-              `)
-            })
-           
-          }
-        }
-      },
-      error:(err)=>{
-      }
-    })
 
+
+    const loadsettings=()=>{
+      ajaxreq({
+        url: "/api/getsettings",
+        success:(res)=>{
+          settings=res.settings
+          $('#pricefield').val(res.settings.price)
+        }
+      })  
     }
+
+
+    const loadlocations=()=>{
+      ajaxreq({
+        url: "/api/getlocations",
+        success: (res)=>{
+          if(res.status=='success'){
+            $('#locations').html('')
+            if(res.locations){
+              res.locations.map((loc)=>{
+                $('#locations').append(`
+                    <li onclick="locid=${loc.id};fn.showDialog('editlocation');loadlocation();">${loc.name}</li>
+                `)
+              })
+             
+            }
+          }
+        },
+        error:(err)=>{
+        }
+      })
+    }
+    
     const loadlocation=()=>{
       ajaxreq({
         url: "/api/getlocation/"+locid,
@@ -842,6 +983,23 @@
           if(res.status=='success'){
             toast("Updated Successfully")
             fn.hideDialog('editlocation')
+            loadlocations();
+          }
+        },
+        error:(err)=>{
+          showinputerrors(err);
+        }
+      })
+    }
+    const deletelocation=()=>{
+      ajaxreq({
+        url: "/api/location/"+locid,
+        type:'delete',
+        success:(res)=>{
+          if(res.status=='success'){
+            toast(res.message)
+            fn.hideDialog('editlocation')
+            loadlocations();
           }
         },
         error:(err)=>{
@@ -857,12 +1015,97 @@
         success:(res)=>{
           if(res.status=='success'){
             toast("Updated Successfully")
+            fn.hideDialog('editlocation')
           }
         },
         error:(err)=>{
           showinputerrors(err);
         }
       })
+    }
+    const addlocation=()=>{
+      ajaxreq({
+        url: "/api/addlocation",
+        type:'post',
+        data:$('#frmaddlocation').serialize(),
+        success:(res)=>{
+          if(res.status=='success'){
+            toast(res.message)
+            fn.hideDialog('addlocation')
+            // loadlocations();
+          }
+        },
+        error:(err)=>{
+          showinputerrors(err);
+        }
+      })
+    }
+    
+    const loadreports=()=>{
+      ajaxreq({
+       url: "/api/reports",
+       type:'get',
+       success: (result)=>{
+         if(result.reports)
+         {
+           $('#tablereports').html('');
+           result.reports.map((report)=>{
+            $('#tablereports').append(`
+              <tr">
+                <td class="px-4 py-4">${report.user.profile.name}</td>
+                <td class="px-4 py-4">${report.subject}</td>
+                <td class="px-4 py-4">${report.status}</td>
+                <td ><button class="bg-teal-500 text-white px-6 py-2 rounded font-medium mx-3 hover:bg-red-600 transition duration-200 each-in-out" onclick="viewreport(${report.id})">View</button></td>
+              </tr>
+            `)
+           })
+         }
+       },
+       error:(res)=>{
+          $('#tablereports').html('error fetching drivers list');
+       }
+     })
+   }
+   const viewreport=(id)=>{
+     loadreport(id);
+     fn.showDialog('viewreport')
+   }
+   const loadreport=(id)=>{
+      ajaxreq({
+        url: "/api/report/"+id,
+        type:'get',
+        success: (result)=>{
+          if(result.report)
+          {
+            $('#reportname').html(result.report.user.profile.name)
+            $('#reportsubject').html(result.report.subject)
+            $('#reportcontent').html(result.report.content)
+            let action="";
+            $('#reportaction').html('')
+            if(result.report.status!='resolved')
+             
+              action=` <p>
+                <ons-button
+                class="inp but" onclick="resolved(${result.report.id})" >Mark as resolved</ons-button>
+                </p>`;
+            $('#reportaction').html(action)
+          }
+        },
+        error:(res)=>{
+          $('#reportaction').html('error fetching report details');
+        }
+    })
+    }
+    const resolved=(id)=>{
+      ajaxreq({
+        url: "/api/resolve/"+id,
+        type:'patch',
+        success: (result)=>{
+          toast(result.message)
+          fn.hideDialog('viewreport')
+          loadreports()
+        },
+    })
     }
       </script>
 

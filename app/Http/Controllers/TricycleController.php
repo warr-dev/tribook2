@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Tricycle;
+use App\Models\User;
 use App\Models\Transactions;
+use Illuminate\Support\Facades\Hash;
 
 class TricycleController extends Controller
 {
@@ -18,10 +20,33 @@ class TricycleController extends Controller
             'name' => 'required|string|max:255',
             'plate_no' => 'required|string|max:255',
             'cpnum' => 'required|string|max:255',
+            
+            'username' => 'required|string|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
         ]);
-        Tricycle::create(
-            $request->all()
-        );
+        
+        $user = User::create([
+            'username' => $validatedData['username'],
+            'cpnum' => $validatedData['cpnum'],
+            'password' => Hash::make($validatedData['password']),
+            'acctype' => 'driver',
+            'status' => 'verified',
+        ]);
+        
+        if($user){
+            $tri=new Tricycle([
+                'user_id'=>$user->id,
+                'name'=>$request->input('name'),
+                'license'=>$request->input('license'),
+                'plate_no'=>$request->input('plate_no'),
+                'cpnum'=>$request->input('cpnum'),
+            ]);
+            $tri->save();
+            return \response(['status'=>'success','message'=>'Driver Added']);
+        }
+        // Tricycle::create(
+        //     $request->all()
+        // );
         return \response(['msg'=>'Driver added successfully','status'=>'success']);
     }
     public function destroy(Tricycle $id)

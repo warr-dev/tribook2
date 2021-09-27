@@ -23,6 +23,8 @@ class User extends Authenticatable
         'email',
         'password',
         'code',
+        'acctype',
+        'status'
     ];
 
     /**
@@ -52,5 +54,9 @@ class User extends Authenticatable
     public function profile()
     {
         return $this->hasOne(Profile::class,'user_id');
+    }
+    public function driver()
+    {
+        return $this->hasOne(Tricycle::class,'user_id');
     }
 }

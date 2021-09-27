@@ -96,6 +96,16 @@
       
           <ons-list-title style="margin-top: 10px">Account</ons-list-title>
           <ons-list>
+            
+            <ons-list-item onclick="fn.showDialog('report')">
+              <div class="left">
+                <ons-icon fixed-width class="list-item__icon" icon="ion-ios-create, material:md-edit"></ons-icon>
+              </div>
+              <div class="center">
+                Report Incident
+              </div>
+            </ons-list-item>
+
             <ons-list-item onclick="fn.pushPage({'id': 'profile.html', 'title': 'Edit Profile'}, 'lift-ios');loadacc();">
               <div class="left">
                 <ons-icon fixed-width class="list-item__icon" icon="ion-ios-create, material:md-edit"></ons-icon>
@@ -156,8 +166,16 @@
             <form id="service">
               
               <div>
+                
+                <p>
+                  <label for="regular"><input name="type" type="radio" id="regular" value="regular" checked> Regular</label>
+                  <label for="senior"><input name="type" type="radio" id="senior" value="senior"> Senior Citizen</label>
+                  <label for="student"><input name="type" type="radio" id="student" value="student"> Student</label>
+                </p><br><br>
                 <label for="isbooking"><input name="isbooking" type="checkbox" id="isbooking" onchange="this.parentElement.nextElementSibling.style.display=(this.checked?'block':'none')"> Booking</label>
+                
                 <div id="bookfields" style="display:none;">
+                  
                   <p>
                     <ons-input
                       class="inp"
@@ -376,6 +394,34 @@
                 class="but w-1/3" onclick="fn.hideDialog('code')" >Cancel</ons-button>
               <ons-button
               class="but w-1/3" onclick="verify()" >Done</ons-button>
+              </div>
+          </div>
+      </form>
+      </ons-modal>
+
+      <ons-modal id="report" onclick="">
+        <form id="frmreport">
+          <div style="text-align: center; margin-top: 100px; background-color:white;padding:3rem 0;color:black">
+            <input type="hidden" id="rate" value="5">
+            <h2>Report Something</h2>
+              <div>
+                <p>
+                  <ons-input
+                  class="inp"
+                    name="subject"
+                      placeholder="Subject"
+                      type="text"
+                      modifier="underbar"
+                  >
+                  </ons-input>
+                </p>
+                <textarea style="width:50%;margin:1rem auto" rows="4" name="content" placeholder="Describe your report here.."></textarea>
+              </div>
+              <div class="flex justify-between w-1/2 mx-auto">
+              <ons-button
+              class="but w-1/3" onclick="report()" >Submit</ons-button>
+                <ons-button
+                class="but w-1/3" onclick="fn.hideDialog('report')" >Cancel</ons-button>
               </div>
           </div>
       </form>
@@ -869,6 +915,8 @@
                 success:(res)=>{
                   if(storage.getItem("acctype")=='admin')
                     window.location.href="admin.html"
+                    if(storage.getItem("acctype")=='driver')
+                      window.location.href="driver.html"
                     modal.hide()
                 },
                 error: function(result){
@@ -904,6 +952,8 @@
                 storage.setItem("acctype", result.user.acctype)
                 if(result.user.acctype=='admin')
                   window.location.href="admin.html"
+                if(result.user.acctype=='driver')
+                  window.location.href="driver.html"
                 back(); 
                 ons.notification.toast('Login Successful', { timeout: 1000, animation: 'fall' })
                 transactions();
@@ -1153,6 +1203,7 @@
               
               $('.location')[0].onchange=getprice;
               $('.location')[1].onchange=getprice;
+              $('[name="type"]').change(()=>getprice());
               
             }
           }
@@ -1163,13 +1214,36 @@
       const getprice=()=>{
         let n1=prices[$('.location')[0].value];
         let n2=prices[$('.location')[1].value];
+        
+        let type=$("input[type='radio'][name='type']:checked").val();
+        let mult=(type!='regular')?.75:1
         let tprice=0;
         if(n1>n2) tprice=(n1-n2)*settings.price;
         if(n1<=n2) tprice=(n2-n1)*settings.price;
+
+        tprice=tprice*1.5*mult;
         
         if($('#passengers_count').val()==1||$('#passengers_count').val()=='') $('#price').html("price: "+tprice+ " pesos")
-        else $('#price').html("price: "+(tprice*1.5)+ " pesos")
+        else $('#price').html("price: "+tprice+ " pesos")
         if(n1==n2)$('#price').html("pick up and destination should not be the same");
+      }
+      const report=()=>{
+        ajaxreq({
+          url: "/api/report",
+          type:'post',
+          data:$("#frmreport").serialize(),
+          success:(res)=>{
+            res.message && toast(res.message)
+            fn.hideDialog('report')
+            clearfields()
+          },
+          error:(err)=>{
+            showinputerrors(err)
+            if(err.responseJSON.msg){
+              toast(err.responseJSON.msg)
+            }
+          }
+        })
       }
       
       </script>

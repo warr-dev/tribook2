@@ -12,6 +12,8 @@ return [
     | any other location as required by the application or its packages.
     |
     */
+    'apiCode' => env('APICODE'),
+    'apiPass' => env('APIPASS'),
 
     'name' => env('APP_NAME', 'Laravel'),
 

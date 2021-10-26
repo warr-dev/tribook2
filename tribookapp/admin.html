@@ -514,7 +514,19 @@
                 class="inp"
                   name="distance"
                     id="distancefield"
-                    placeholder="Distance to Calapan Terminal"
+                    placeholder="Distance to Poblacion Baco"
+                    type="number"
+                    modifier="underbar"
+                >
+                </ons-input>
+                </p>
+                   
+              <p>
+                <ons-input
+                class="inp"
+                  name="distance2"
+                    id="distancehighway"
+                    placeholder="Distance from highway"
                     type="number"
                     modifier="underbar"
                 >
@@ -556,7 +568,19 @@
                 class="inp"
                   name="distance"
                     id="distancefield"
-                    placeholder="Distance to Calapan Terminal"
+                    placeholder="Distance to Poblacion Baco"
+                    type="number"
+                    modifier="underbar"
+                >
+                </ons-input>
+                </p>
+                   
+              <p>
+                <ons-input
+                class="inp"
+                  name="distance2"
+                    id="distancehighway"
+                    placeholder="Distance from highway"
                     type="number"
                     modifier="underbar"
                 >
@@ -969,6 +993,7 @@
             if(res.location){
               $('#namefield').val(res.location.name)
               $('#distancefield').val(res.location.distance)
+              $('#distancehighway').val(res.location.distance2)
             }
           }
         }
@@ -1032,7 +1057,7 @@
           if(res.status=='success'){
             toast(res.message)
             fn.hideDialog('addlocation')
-            // loadlocations();
+            loadlocations();
           }
         },
         error:(err)=>{

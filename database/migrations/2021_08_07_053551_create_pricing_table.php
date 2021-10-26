@@ -17,6 +17,7 @@ class CreatePricingTable extends Migration
             $table->id();
             $table->string('name');
             $table->float('distance');
+            $table->float('distance2');
             $table->timestamps();
         });
     }

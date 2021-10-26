@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Tricycle;
+use APp\Models\Settings;
 
 
 class DatabaseSeeder extends Seeder
@@ -30,6 +31,7 @@ class DatabaseSeeder extends Seeder
         Tricycle::factory(50)->create();
         $this->call(LocationSeeder::class);
         $this->call(SettingsSeeder::class);
+
         
     }
 }

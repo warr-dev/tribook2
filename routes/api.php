@@ -35,7 +35,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/transaction/{id}/cancel', ['uses'=> '\App\Http\Controllers\TransactionsController@cancel']);
     Route::post('/adddriver', ['uses'=> '\App\Http\Controllers\TricycleController@create']);
     Route::post('/service', ['uses'=> '\App\Http\Controllers\TransactionsController@store']);
-    Route::post('/pickup', ['uses'=> '\App\Http\Controllers\BookingController@pickup']);
     Route::get('/transactions', ['uses'=> '\App\Http\Controllers\TransactionsController@transactions']);
     Route::delete('/driver/{id}', ['uses'=> '\App\Http\Controllers\TricycleController@destroy']);
     Route::get('/driver/{id}', ['uses'=> '\App\Http\Controllers\TricycleController@show']);

@@ -918,6 +918,7 @@
                     if(storage.getItem("acctype")=='driver')
                       window.location.href="driver.html"
                     modal.hide()
+                    loadlocations()
                 },
                 error: function(result){
                     modal.hide()
@@ -1175,6 +1176,7 @@
         })
       }
       let prices=[];
+      let distances2=[];
       let settings={};
       ajaxreq({
         url: "/api/getsettings",
@@ -1182,6 +1184,8 @@
           settings=res.settings
         }
       })
+      const loadlocations=()=>{
+        
       ajaxreq({
         url: "/api/getlocations",
         success: function(res){
@@ -1199,6 +1203,7 @@
                 <option value="${loc.id}">${loc.name}</option>
                 `
                 prices[loc.id]=loc.distance;
+                distances2[loc.id]=loc.distance2;
               })
               
               $('.location')[0].onchange=getprice;
@@ -1211,20 +1216,27 @@
         error:(err)=>{
         }
       })
+      }
+      loadlocations();
       const getprice=()=>{
         let n1=prices[$('.location')[0].value];
         let n2=prices[$('.location')[1].value];
+        let n3=distances2[$('.location')[0].value];
+        let n4=distances2[$('.location')[1].value];
         
         let type=$("input[type='radio'][name='type']:checked").val();
         let mult=(type!='regular')?.75:1
         let tprice=0;
-        if(n1>n2) tprice=(n1-n2)*settings.price;
-        if(n1<=n2) tprice=(n2-n1)*settings.price;
+        if(n1>n2) tprice=(n1-n2+n3+n4)*settings.price;
+        if(n1<=n2) tprice=(n2-n1+n3+n4)*settings.price;
 
-        tprice=tprice*1.5*mult;
+        
         
         if($('#passengers_count').val()==1||$('#passengers_count').val()=='') $('#price').html("price: "+tprice+ " pesos")
-        else $('#price').html("price: "+tprice+ " pesos")
+        else{
+          tprice=tprice*1.5*mult;
+          $('#price').html("price: "+tprice+ " pesos")
+        } 
         if(n1==n2)$('#price').html("pick up and destination should not be the same");
       }
       const report=()=>{

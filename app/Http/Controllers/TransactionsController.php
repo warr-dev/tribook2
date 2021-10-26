@@ -168,6 +168,7 @@ Contact Number/s :'.implode(', ',$drivercpnum);
         $validatedData = $request->validate([
             'name' => 'required|string',
             'distance' => 'required|numeric',
+            'distance2' => 'required|numeric',
         ]);
         $id->update($validatedData);
         return \response(['location'=>$id,'status'=>'success']);
@@ -177,7 +178,11 @@ Contact Number/s :'.implode(', ',$drivercpnum);
         $validatedData = $request->validate([
             'price' => 'required|numeric',
         ]);
-        $settings=Settings::first();
+        $settings=Settings::where('id',1)->first();
+        if(!$settings){
+            Settings::create($validatedData);
+            return \response(['status'=>'success']);
+        }
         $settings->update($validatedData);
         return \response(['status'=>'success']);
     }
@@ -186,6 +191,7 @@ Contact Number/s :'.implode(', ',$drivercpnum);
         $validatedData = $request->validate([
             'name' => 'required',
             'distance' => 'required|numeric',
+            'distance2' => 'required|numeric',
         ]);
         $location=new Locations();
         $location->create($request->all());

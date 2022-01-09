@@ -25,10 +25,11 @@ class TransactionsController extends Controller
     
     public function store(Request $request)
     {
+        $maxpass=Settings::first()->max_passenger;
         $validatedData = $request->validate([
             'pickup' => 'required|numeric',
             'destination' => 'required|numeric',
-            'passengers_count' => 'numeric|max:2',
+            'passengers_count' => 'numeric',
             'notes' => '',
             'isbooking' => '',
             'date' => '',
@@ -147,6 +148,17 @@ Contact Number/s :'.implode(', ',$drivercpnum);
         $id->rating=$request->input('rate');
         $id->comment=$request->input('comment');
         $id->save();
+        
+        $counter=$id->passengers_count;
+        $maxpass=Settings::first()->max_passenger;
+        $count=$counter/$maxpass;
+
+        if($counter%$maxpass!=0) $count++;
+
+        foreach($id->drivers as $driver){
+            $driver->passenger=0;
+            $driver->save();
+        }
         return \response(['msg'=>'Transaction marked as done','status'=>'success']);
     }
 
@@ -157,7 +169,7 @@ Contact Number/s :'.implode(', ',$drivercpnum);
     }
     public function settings()
     {
-        return \response(['settings'=>Settings::select('price')->first(),'status'=>'success']);
+        return \response(['settings'=>Settings::first(),'status'=>'success']);
     }
     public function location(Locations $id)
     {
@@ -226,6 +238,14 @@ Contact Number/s :'.implode(', ',$drivercpnum);
         $id->status='resolved';
         $id->save();
         return \response(['status'=>'success','message'=>'report was marked as resolved']);
+    }
+    public function updateMaxPassenger(Request $request)
+    {
+        $settings=Settings::where('id',1)->first();
+        $settings->update([
+            'max_passenger'=> $request->max_passenger
+        ]);
+        return response(['status'=>'success','message'=>'Maximum Passenger Count Updated']);
     }
 //     public function test()
 //     {

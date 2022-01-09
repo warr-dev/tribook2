@@ -9,7 +9,7 @@
 
 <script>
     const storage = window.localStorage;
-    let server=storage.getItem("server") || "http://localhost:8000"
+    let server=storage.getItem("server") || "https://tricyclebook.com"
 </script>
 </head>
 <body>
@@ -483,6 +483,21 @@
                   <p>
                     <ons-button
                     class="inp but" onclick="fn.showDialog('addlocation')" >Add Location</ons-button>
+                  </p>
+                  
+                  <h3>Maximum Passenger</h3>
+                  <ons-input
+                  class="inp"
+                    name="maxpass"
+                    id="maxpass"
+                      placeholder="Maximum passenger"
+                      type="text"
+                      modifier="underbar"
+                  >
+                  </ons-input>
+                  <p>
+                    <ons-button
+                    class="inp but" onclick="updateMaxPassenger()" >Update</ons-button>
                   </p>
                 </div>
             </form>
@@ -959,6 +974,7 @@
         success:(res)=>{
           settings=res.settings
           $('#pricefield').val(res.settings.price)
+          $('#maxpass').val(res.settings.max_passenger)
         }
       })  
     }
@@ -1132,6 +1148,18 @@
         },
     })
     }
+    function updateMaxPassenger(){
+      ajaxreq({
+        url: "/api/settings/maxpassenger/update",
+        type:'patch',
+        data:{max_passenger:$('#maxpass').val()},
+        success: (result)=>{
+          toast(result.message)
+          fn.hideDialog('viewreport')
+          loadreports()
+        }
+      })
+    } 
       </script>
 
 </body>

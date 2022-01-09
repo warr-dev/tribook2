@@ -42,15 +42,18 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/myaccount', ['uses'=> '\App\Http\Controllers\AuthController@myAccount']);
     Route::patch('/myaccount', ['uses'=> '\App\Http\Controllers\AuthController@update']);
 
-Route::get('/getlocations', ['uses'=> '\App\Http\Controllers\TransactionsController@locations']);
-Route::get('/getlocation/{id}', ['uses'=> '\App\Http\Controllers\TransactionsController@location']);
-Route::patch('/location/{id}', ['uses'=> '\App\Http\Controllers\TransactionsController@updatelocation']);
-Route::delete('/location/{locid}', ['uses'=> '\App\Http\Controllers\TransactionsController@deletelocation']);
-Route::post('/addlocation', ['uses'=> '\App\Http\Controllers\TransactionsController@addlocation']);
-Route::get('/getsettings', ['uses'=> '\App\Http\Controllers\TransactionsController@settings']);
-Route::patch('/updatesettings', ['uses'=> '\App\Http\Controllers\TransactionsController@updatesettings']);
-Route::post('/report', ['uses'=> '\App\Http\Controllers\TransactionsController@report']);
-Route::get('/report/{id}', ['uses'=> '\App\Http\Controllers\TransactionsController@getreport']);
-Route::patch('/resolve/{id}', ['uses'=> '\App\Http\Controllers\TransactionsController@resolve']);
-Route::get('/reports', ['uses'=> '\App\Http\Controllers\TransactionsController@getreports']);
+    Route::get('/getlocations', ['uses'=> '\App\Http\Controllers\TransactionsController@locations']);
+    Route::get('/getlocation/{id}', ['uses'=> '\App\Http\Controllers\TransactionsController@location']);
+    Route::patch('/location/{id}', ['uses'=> '\App\Http\Controllers\TransactionsController@updatelocation']);
+    Route::delete('/location/{locid}', ['uses'=> '\App\Http\Controllers\TransactionsController@deletelocation']);
+    Route::post('/addlocation', ['uses'=> '\App\Http\Controllers\TransactionsController@addlocation']);
+    Route::get('/getsettings', ['uses'=> '\App\Http\Controllers\TransactionsController@settings']);
+    Route::patch('/updatesettings', ['uses'=> '\App\Http\Controllers\TransactionsController@updatesettings']);
+    Route::post('/report', ['uses'=> '\App\Http\Controllers\TransactionsController@report']);
+    Route::get('/report/{id}', ['uses'=> '\App\Http\Controllers\TransactionsController@getreport']);
+    Route::patch('/resolve/{id}', ['uses'=> '\App\Http\Controllers\TransactionsController@resolve']);
+    Route::get('/reports', ['uses'=> '\App\Http\Controllers\TransactionsController@getreports']);
+
+    
+    Route::patch('/settings/maxpassenger/update', ['uses'=> '\App\Http\Controllers\TransactionsController@updateMaxPassenger']);
 });

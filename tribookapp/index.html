@@ -12,7 +12,7 @@
 
 <script>
     const storage = window.localStorage;
-    let server=storage.getItem("server") || "http://localhost:8000"
+    let server=storage.getItem("server") || "https://tricyclebook.com"
 </script>
 </head>
 <body>
@@ -165,13 +165,12 @@
             <h1>Book for a Tricycle Service</h1>
             <form id="service">
               
-              <div>
-                
-                <p>
-                  <label for="regular"><input name="type" type="radio" id="regular" value="regular" checked> Regular</label>
-                  <label for="senior"><input name="type" type="radio" id="senior" value="senior"> Senior Citizen</label>
-                  <label for="student"><input name="type" type="radio" id="student" value="student"> Student</label>
-                </p><br><br>
+              <div class="text-center">
+                <div class="text-left" style="width: 50%;margin:0 auto">
+                  <p><label for="regular"><input name="type" type="radio" id="regular" value="regular" checked> Regular</label></p>
+                  <p><label for="senior"><input name="type" type="radio" id="senior" value="senior"> Senior Citizen</label></p>
+                  <p><label for="student"><input name="type" type="radio" id="student" value="student"> Student</label></p>
+                </div>
                 <label for="isbooking"><input name="isbooking" type="checkbox" id="isbooking" onchange="this.parentElement.nextElementSibling.style.display=(this.checked?'block':'none')"> Booking</label>
                 
                 <div id="bookfields" style="display:none;">
@@ -309,7 +308,7 @@
 
 
       <ons-modal id="mark-as-done" onclick="//fn.hideDialog('assign')">
-        <form id="frmlogin">
+        <form>
           <div style="text-align: center; margin-top: 100px; background-color:white;padding:3rem 0;color:black">
             <input type="hidden" id="rate" value="5">
             <h2>Rate Driver's Service</h2>
@@ -352,9 +351,9 @@
       </ons-modal>
       
       <ons-modal id="viewdriver" onclick="">
-        <form id="frmlogin">
+        <form>
           <div style="text-align: center; margin-top: 100px; background-color:white;padding:3rem 0">
-            <input type="hidden" id="rate" value="5">
+            <input type="hidden"value="5">
             <h2 style="color:black" id="drivername"></h2>
               <img src="avatr.png" alt="" width="50%" style="margin:0 auto">
               <div id="driverrate" style="margin-top:2rem"></div>
@@ -371,7 +370,7 @@
       <ons-modal id="code" onclick="">
         <form id="verify">
           <div style="text-align: center; margin-top: 100px; background-color:white;padding:3rem 0;color:black">
-            <input type="hidden" id="rate" value="5">
+            <input type="hidden"  value="5">
             <h2>Verify Phone Number</h2>
               <div>
                 <p>
@@ -402,7 +401,7 @@
       <ons-modal id="report" onclick="">
         <form id="frmreport">
           <div style="text-align: center; margin-top: 100px; background-color:white;padding:3rem 0;color:black">
-            <input type="hidden" id="rate" value="5">
+            <input type="hidden" value="5">
             <h2>Report Something</h2>
               <div>
                 <p>
@@ -812,23 +811,24 @@
         
      const viewdriver=(id)=>{
       fn.showDialog('viewdriver')
-      $('#drivercomments').html('')
-      $('#drivercomments').html('')
+      $('#drivername').html('')
+      $('#driverrate').html('')
       $('#drivercomments').html('')
       ajaxreq({
         url: "/api/driver/"+id,
         type:'get',
         success: function(result){
           $('#drivername').html(result.driver.name)
-          jQuery("#driverrate").emotionsRating({
-            emotionSize: 30,
-            bgEmotion: 'happy',
-            emotions: emotionsArray,
-            color: '#FF0066', //the color must be expressed with a css code
-                initialRating:result.rate.rate , //initialize the rating number
-            disabled: true, //set if the rating can be changed or not, default is false
-            //onUpdate: (value)=>{$('#rate').val(value)} //set value changed event handler
-          });
+          let smileys="";
+          for(let i=1;i<=5;i++){
+            let op=i<=result.rate.rate?1:0.3;
+            smileys+=`<div class="emotion-style-ratedriver" data-index="1" style="opacity: ${op};">😊</div>`;
+          }
+          if(result.rate.count==0) smileys="No rating yet";
+          let rate=`<div class="emotion-container-ratedriver" style="display:flex;color:black;justify-content:center;padding:1rem">${smileys}</div>`;
+          if(result.rate.count!=0)rate+=`<div>rated by: ${result.rate.count}</div>`;
+         $('#driverrate').html(rate)
+
           result.comments.map((comment)=>{
             $('#drivercomments').append(`<div style="height:3rem;width:50vw;color:gray">"${comment}"</div>`)
           })
@@ -860,7 +860,7 @@
                    <td class="px-4 py-4">${transaction.loc2.name}</td>
                    <td class="px-4 py-4">${drivers.join(', ')}</td>
                    <td class="px-4 py-4">${transaction.passengers_count}</td>
-                   <td class="px-4 py-4">${date.toString()} ${transaction.time}</td>
+                   <td class="px-4 py-4">${date.toString()} ${transaction.time||''}</td>
                    <td class="px-4 py-4">${transaction.price}</td>
                    <td class="px-4 py-4">${transaction.status}</td>
                    <td class="px-4 py-4">${transaction.notes}</td>
@@ -959,6 +959,7 @@
                 ons.notification.toast('Login Successful', { timeout: 1000, animation: 'fall' })
                 transactions();
                 clearfields();
+                loadlocations();
             },
           error: (e)=>{
             showinputerrors(e)

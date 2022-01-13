@@ -14,7 +14,7 @@ class AlterTricycleAddPassengers extends Migration
     public function up()
     {
         Schema::table('tricycle', function (Blueprint $table) {
-            $table->integer('passenger')->after('status');
+            $table->integer('passenger')->after('status')->default(0);
         });
     }
 

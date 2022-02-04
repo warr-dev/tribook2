@@ -1220,11 +1220,11 @@
       }
       loadlocations();
       const getprice=()=>{
-        console.log(prices,distances2)
         let n1=prices[$('.location')[0].value];
         let n2=prices[$('.location')[1].value];
         let n3=distances2[$('.location')[0].value];
         let n4=distances2[$('.location')[1].value];
+        console.log(n1,n2)
         
         let type=$("input[type='radio'][name='type']:checked").val();
         let mult=(type!='regular')?.75:1
@@ -1234,8 +1234,9 @@
 
         
         
-        if($('#passengers_count').val()=='') 
-          $('#price').html("price: "+tprice+ " pesos")
+          let a=$('#passengers_count').val()!=''?$('#passengers_count').val():1;
+          $('#price').html("price: "+(tprice*a)+ " pesos")
+        
         //else{
         //  tprice=tprice*1.5*mult;
         //  $('#price').html("price: "+tprice+ " pesos")

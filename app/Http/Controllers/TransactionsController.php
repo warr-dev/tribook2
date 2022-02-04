@@ -38,6 +38,17 @@ class TransactionsController extends Controller
         if(isset($validatedData['isbooking'])){
             unset($validatedData['isbooking']);
             $validatedData['status']='pending';
+            $book=new Transactions(
+                array_merge(
+                    $validatedData,
+                    [
+                        'price'=>Locations::getprice(Locations::find($validatedData['pickup']),Locations::find($validatedData['destination']),$validatedData['passengers_count']),
+                        'user_id'=>auth('sanctum')->user()->id,
+                    ]
+                ));
+            $book->save();
+            return \response(['msg'=>'Application for service successful.. waiting for assigned driver','status'=>'success']);
+            
         }else{
             unset($validatedData['isbooking']);
             unset($validatedData['date']);

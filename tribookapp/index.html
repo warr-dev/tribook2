@@ -171,7 +171,7 @@
                   <p><label for="senior"><input name="type" type="radio" id="senior" value="senior"> Senior Citizen</label></p>
                   <p><label for="student"><input name="type" type="radio" id="student" value="student"> Student</label></p>
                 </div>
-                <label for="isbooking"><input name="isbooking" type="checkbox" id="isbooking" onchange="this.parentElement.nextElementSibling.style.display=(this.checked?'block':'none')"> Booking</label>
+                <label for="isbooking"><input name="isbooking" type="checkbox" id="isbooking" onchange="this.parentElement.nextElementSibling.style.display=(this.checked?'block':'none')" value="on"> Booking</label>
                 
                 <div id="bookfields" style="display:none;">
                   
@@ -243,7 +243,7 @@
           </div>
           <script>
             const set=()=>{
-                let fd=$('#service').serializeArray();
+                let fd=$('#service').serialize();
                 ajaxreq({
                   data:fd,
                   url:'/api/service',
@@ -876,7 +876,7 @@
        })
      }
      const clearfields=()=>{
-       $('input').val('')
+       $('input[type="text"]').val('')
      }
      const cancel=(id)=>{
       ajaxreq({

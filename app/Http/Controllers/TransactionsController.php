@@ -35,7 +35,7 @@ class TransactionsController extends Controller
             'date' => '',
             'time' => '',
         ]);
-        if(isset($validatedData['isbooking'])){
+        if(isset($request->isbooking)){
             unset($validatedData['isbooking']);
             $validatedData['status']='pending';
             $book=new Transactions(

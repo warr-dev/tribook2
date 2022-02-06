@@ -13,6 +13,10 @@ class Transactions extends Model
     protected $guarded=[];
     protected $hidden=['code'];
 
+    protected $casts = [
+        'date' => 'datetime:m/d/Y',
+    ];
+
     public function client()
     {
         return $this->belongsTo(User::class,'user_id');

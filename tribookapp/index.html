@@ -846,7 +846,7 @@
              $('#tabletransaction').html('')
              result.transactions.map((transaction)=>{
                let date=new Date(transaction.created_at)
-               date=`${date.getMonth()}/${date.getDate()}/${date.getFullYear()}`
+               //date=`${date.getMonth()}/${date.getDate()}/${date.getFullYear()}`
                let action=transaction.status=='assigned'?`<button class="bg-teal-500 text-white px-6 py-2 rounded font-medium mx-3 hover:bg-red-600 transition duration-200 each-in-out" onclick="done(${transaction.id})" >Done</button>`:''
                action+=transaction.status=='pending'?`<button class="bg-red-500 text-white px-6 py-2 rounded font-medium mx-3 hover:bg-red-600 transition duration-200 each-in-out" onclick="cancel(${transaction.id})" >Cancel</button>`:''
                 let drivers=[];
@@ -860,7 +860,7 @@
                    <td class="px-4 py-4">${transaction.loc2.name}</td>
                    <td class="px-4 py-4">${drivers.join(', ')}</td>
                    <td class="px-4 py-4">${transaction.passengers_count}</td>
-                   <td class="px-4 py-4">${date.toString()} ${transaction.time||''}</td>
+                   <td class="px-4 py-4">${transaction.date||''} ${transaction.time||''}</td>
                    <td class="px-4 py-4">${transaction.price}</td>
                    <td class="px-4 py-4">${transaction.status}</td>
                    <td class="px-4 py-4">${transaction.notes}</td>

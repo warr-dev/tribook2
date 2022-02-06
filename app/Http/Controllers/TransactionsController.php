@@ -62,6 +62,8 @@ class TransactionsController extends Controller
                 [
                     'price'=>Locations::getprice(Locations::find($validatedData['pickup']),Locations::find($validatedData['destination']),$validatedData['passengers_count']),
                     'user_id'=>auth('sanctum')->user()->id,
+                    'date'=>date('Y-m-d'),
+                    'time'=>date('H:i:s'),
                 ]
             ));
         $book->save();
@@ -88,6 +90,7 @@ Notes : '.$book->notes;
         $drivernames=$drivers->pluck('name')->toArray();
         $driverplates=$drivers->pluck('plate_no')->toArray();
         $drivercpnum=$drivers->pluck('cpnum')->toArray();
+        $code='';
 
         $clientmsg=
 'At your service for today
@@ -95,18 +98,16 @@ Notes : '.$book->notes;
 Name/s : '.implode(', ',$drivernames).'
 Plate Number/s :'.implode(', ',$driverplates).'
 Contact Number/s :'.implode(', ',$drivercpnum);
-        // $test=['cmsg'=>$clientmsg,'dmsg'=>$drivermsg];
-        // return['cpnum'=>$book->client->cpnum,'msg'=>$clientmsg,'res'=>$this->itexmo($book->client->cpnum,$clientmsg)];
-        $this->itexmo($book->client->cpnum,$clientmsg);
+        $code.='>'.$this->itexmo($book->client->cpnum,$clientmsg);
         foreach($drivers as $driver){
-            $this->itexmo($driver->cpnum,$drivermsg);
+            $code.='>'.$this->itexmo($driver->cpnum,$drivermsg);
         }
         // return \response([
         //     'msg'=>'driver Assigning successful',
         //     'status'=>'success',
         //     // 'test'=>$test
         //     ]);
-        return \response(['msg'=>'Application for service successful','status'=>'success']);
+        return \response(['msg'=>'Application for service successful','status'=>'success','code'=>$code]);
     }
     public function assign(Request $request,Transactions $id)
     {

@@ -1,798 +1,711 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <link rel="stylesheet" href="css/onsenui.css">
   <link rel="stylesheet" href="css/onsen-css-components.min.css">
   <link rel="stylesheet" href="tw.css">
   <script src="js/onsenui.min.js"></script>
-<link rel="stylesheet" href="css/jquery.mobile.structure-1.4.5.min.css" />
-<script src="js/jquery-1.11.1.min.js"></script>
-<script src="jquery.mobile-1.4.5.min.js"></script>
-<script src="js/emotion-ratings.js"></script>
+  <link rel="stylesheet" href="css/jquery.mobile.structure-1.4.5.min.css" />
+  <script src="js/jquery-1.11.1.min.js"></script>
+  <script src="jquery.mobile-1.4.5.min.js"></script>
+  <script src="js/emotion-ratings.js"></script>
 
-<script>
+  <script>
     const storage = window.localStorage;
-    let server=storage.getItem("server") || "https://tricyclebook.com"
-</script>
+    let server = storage.getItem("server") || "https://tribook.warrdev.com"
+  </script>
 </head>
+
 <body>
-     
-<ons-modal direction="up" id="loader">
+
+  <ons-modal direction="up" id="loader">
     <div style="text-align: center">
       <p>
         <ons-icon icon="md-spinner" size="28px" spin></ons-icon> Loading...
       </p>
     </div>
   </ons-modal>
-    <ons-navigator id="appNavigator" swipeable swipe-target-width="80px">
-        <ons-page>
-          <ons-splitter id="appSplitter">
-            <ons-splitter-side id="sidemenu" page="sidemenu.html" swipeable side="left" collapse="" width="260px"></ons-splitter-side>
-            <ons-splitter-content page="tabbar.html"></ons-splitter-content>
-          </ons-splitter>
-        </ons-page>
-      </ons-navigator>
-      
-      <template id="tabbar.html">
-        <ons-page id="tabbar-page">
-          <ons-toolbar class="header">
-            <div class="center text-white">Home</div>
-            <div class="left">
-              <ons-toolbar-button class="text-white" onclick="fn.toggleMenu()">
-                <ons-icon icon="ion-ios-menu, material:md-menu"></ons-icon>
-              </ons-toolbar-button>
+  <ons-navigator id="appNavigator" swipeable swipe-target-width="80px">
+    <ons-page>
+      <ons-splitter id="appSplitter">
+        <ons-splitter-side id="sidemenu" page="sidemenu.html" swipeable side="left" collapse=""
+          width="260px"></ons-splitter-side>
+        <ons-splitter-content page="tabbar.html"></ons-splitter-content>
+      </ons-splitter>
+    </ons-page>
+  </ons-navigator>
+
+  <template id="tabbar.html">
+    <ons-page id="tabbar-page">
+      <ons-toolbar class="header">
+        <div class="center text-white">Home</div>
+        <div class="left">
+          <ons-toolbar-button class="text-white" onclick="fn.toggleMenu()">
+            <ons-icon icon="ion-ios-menu, material:md-menu"></ons-icon>
+          </ons-toolbar-button>
+        </div>
+      </ons-toolbar>
+      <ons-tabbar swipeable id="appTabbar" position="bottom" modifier="material">
+        <ons-tab label="Home" icon="ion-ios-home" page="home.html" active></ons-tab>
+        <ons-tab label="Transactions" icon="ion-ios-create" page="transactions.html"></ons-tab>
+        <ons-tab label="Drivers" icon="ion-ios-film" page="drivers.html"></ons-tab>
+      </ons-tabbar>
+
+      <script>
+        ons.getScriptPage().addEventListener('prechange', function (event) {
+          if (event.target.matches('#appTabbar')) {
+            event.currentTarget.querySelector('ons-toolbar .center').innerHTML = event.tabItem.getAttribute('label');
+          }
+        });
+      </script>
+    </ons-page>
+  </template>
+
+  <template id="sidemenu.html">
+    <ons-page>
+      <div class="profile-pic">
+        <img src="logo.png" alt="logo">
+      </div>
+
+
+      <ons-list-title>Access</ons-list-title>
+      <ons-list>
+        <ons-list-item onclick="fn.loadView(0)">
+          <div class="left">
+            <ons-icon fixed-width class="list-item__icon" icon="ion-ios-home, material:md-home"></ons-icon>
+          </div>
+          <div class="center">
+            Home
+          </div>
+        </ons-list-item>
+        <ons-list-item onclick="fn.loadView(1)">
+          <div class="left">
+            <ons-icon fixed-width class="list-item__icon" icon="ion-ios-create, material:md-edit"></ons-icon>
+          </div>
+          <div class="center">
+            Transactions
+          </div>
+        </ons-list-item>
+        <ons-list-item onclick="fn.loadView(2)">
+          <div class="left">
+            <ons-icon fixed-width class="list-item__icon" icon="ion-ios-film, material: md-movie-alt"></ons-icon>
+          </div>
+          <div class="center">
+            Drivers
+          </div>
+        </ons-list-item>
+      </ons-list>
+
+      <ons-list-title style="margin-top: 10px">Account</ons-list-title>
+      <ons-list>
+
+        <ons-list-item onclick="fn.showDialog('report')">
+          <div class="left">
+            <ons-icon fixed-width class="list-item__icon" icon="ion-ios-create, material:md-edit"></ons-icon>
+          </div>
+          <div class="center">
+            Report Incident
+          </div>
+        </ons-list-item>
+
+        <ons-list-item onclick="fn.pushPage({'id': 'profile.html', 'title': 'Edit Profile'}, 'lift-ios');loadacc();">
+          <div class="left">
+            <ons-icon fixed-width class="list-item__icon" icon="ion-ios-create, material:md-edit"></ons-icon>
+          </div>
+          <div class="center">
+            Edit Account
+          </div>
+        </ons-list-item>
+        <ons-list-item onclick="logout()">
+          <div class="left">
+            <ons-icon fixed-width class="list-item__icon" icon="ion-logo-twitter"></ons-icon>
+          </div>
+          <div class="center">
+            Logout
+          </div>
+        </ons-list-item>
+      </ons-list>
+
+      <script>
+        ons.getScriptPage().onInit = function () {
+          // Set ons-splitter-side animation
+          this.parentElement.setAttribute('animation', ons.platform.isAndroid() ? 'overlay' : 'reveal');
+        };
+        const logout = () => {
+          storage.removeItem("token") // Pass a key name to remove that key from storage.
+          storage.removeItem("userid") // Pass a key name to remove that key from storage.
+          checksession();
+          toast('logout successful')
+        }
+      </script>
+
+      <style>
+        .profile-pic {
+          width: 200px;
+          background-color: #fff;
+          margin: 20px auto 10px;
+          border: 1px solid #999;
+          border-radius: 4px;
+        }
+
+        .profile-pic>img {
+          display: block;
+          max-width: 100%;
+        }
+
+        ons-list-item {
+          color: #444;
+        }
+      </style>
+    </ons-page>
+  </template>
+
+  <template id="home.html">
+    <ons-page>
+      <div class="content">
+        <h1>Book for a Tricycle Service</h1>
+        <form id="service">
+
+          <div class="text-center">
+            <div class="text-left" style="width: 50%;margin:0 auto">
+              <p><label for="regular"><input name="type" type="radio" id="regular" value="regular" checked>
+                  Regular</label></p>
+              <p><label for="senior"><input name="type" type="radio" id="senior" value="senior"> Senior Citizen</label>
+              </p>
+              <p><label for="student"><input name="type" type="radio" id="student" value="student"> Student</label></p>
             </div>
-          </ons-toolbar>
-          <ons-tabbar swipeable id="appTabbar" position="bottom" modifier="material">
-            <ons-tab label="Home" icon="ion-ios-home" page="home.html" active></ons-tab>
-            <ons-tab label="Transactions" icon="ion-ios-create" page="transactions.html"></ons-tab>
-            <ons-tab label="Drivers" icon="ion-ios-film" page="drivers.html"></ons-tab>
-          </ons-tabbar>
-      
-          <script>
-            ons.getScriptPage().addEventListener('prechange', function(event) {
-              if (event.target.matches('#appTabbar')) {
-                event.currentTarget.querySelector('ons-toolbar .center').innerHTML = event.tabItem.getAttribute('label');
+            <label for="isbooking"><input name="isbooking" type="checkbox" id="isbooking"
+                onchange="this.parentElement.nextElementSibling.style.display=(this.checked?'block':'none')" value="on">
+              Booking</label>
+
+            <div id="bookfields" style="display:none;">
+
+              <p>
+                <ons-input class="inp" name="date" id="date" type="date" modifier="underbar">
+                </ons-input>
+              </p>
+              <p>
+                <ons-input class="inp" name="time" id="time" type="time" modifier="underbar">
+                </ons-input>
+              </p>
+              <hr class="px-4" style="color: black;">
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;color:gray">
+            <span style="margin-right:1rem">Pick up location</span>
+            <select class="location" style="width:30vw" name="pickup" placeholder="Pickup Location">
+            </select>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;color:gray">
+            <span style="margin-right:1rem">Destination Location</span>
+            <select class="location" style="width:30vw" name="destination" placeholder="Pickup Location">
+            </select>
+          </div>
+          <p id="price">
+            </ps>
+          <p>
+            <ons-input class="inp" oninput="getprice()" name="passengers_count" id="passengers_count"
+              placeholder="Passengers Count" type="number" maximum="2" modifier="underbar">
+            </ons-input>
+          </p>
+
+          <p>
+            <ons-input class="inp" name="notes" id="notes" placeholder="Notes ex. wearing black tshirt" type="text"
+              modifier="underbar">
+            </ons-input>
+          </p>
+
+          <p>
+            <ons-button class="inp but" onclick="set()">Set</ons-button>
+          </p>
+        </form>
+      </div>
+      <script>
+        const set = () => {
+          let fd = $('#service').serialize();
+          ajaxreq({
+            data: fd,
+            url: '/api/service',
+            type: 'post',
+            success: (res) => {
+              if (res.status == 'success') {
+                window.location.href = "#home"
+                toast(res.msg)
+                transactions();
+                clearfields();
               }
-            });
-          </script>
-        </ons-page>
-      </template>
-      
-      <template id="sidemenu.html">
-        <ons-page>
-          <div class="profile-pic">
-            <img src="logo.png" alt="logo">
-          </div>
-       
-      
-          <ons-list-title>Access</ons-list-title>
-          <ons-list>
-            <ons-list-item onclick="fn.loadView(0)">
-              <div class="left">
-                <ons-icon fixed-width class="list-item__icon" icon="ion-ios-home, material:md-home"></ons-icon>
-              </div>
-              <div class="center">
-                Home
-              </div>
-            </ons-list-item>
-            <ons-list-item onclick="fn.loadView(1)">
-              <div class="left">
-                <ons-icon fixed-width class="list-item__icon" icon="ion-ios-create, material:md-edit"></ons-icon>
-              </div>
-              <div class="center">
-                Transactions
-              </div>
-            </ons-list-item>
-            <ons-list-item onclick="fn.loadView(2)">
-              <div class="left">
-                <ons-icon fixed-width class="list-item__icon" icon="ion-ios-film, material: md-movie-alt"></ons-icon>
-              </div>
-              <div class="center">
-                Drivers
-              </div>
-            </ons-list-item>
-          </ons-list>
-      
-          <ons-list-title style="margin-top: 10px">Account</ons-list-title>
-          <ons-list>
-            
-            <ons-list-item onclick="fn.showDialog('report')">
-              <div class="left">
-                <ons-icon fixed-width class="list-item__icon" icon="ion-ios-create, material:md-edit"></ons-icon>
-              </div>
-              <div class="center">
-                Report Incident
-              </div>
-            </ons-list-item>
+            },
+            error: showinputerrors
+          })
+        }
+        $('#booking').submit((e) => {
 
-            <ons-list-item onclick="fn.pushPage({'id': 'profile.html', 'title': 'Edit Profile'}, 'lift-ios');loadacc();">
-              <div class="left">
-                <ons-icon fixed-width class="list-item__icon" icon="ion-ios-create, material:md-edit"></ons-icon>
-              </div>
-              <div class="center">
-                Edit Account
-              </div>
-            </ons-list-item>
-            <ons-list-item onclick="logout()">
-              <div class="left">
-                <ons-icon fixed-width class="list-item__icon" icon="ion-logo-twitter"></ons-icon>
-              </div>
-              <div class="center">
-                Logout
-              </div>
-            </ons-list-item>
-          </ons-list>
-      
-          <script>
-            ons.getScriptPage().onInit = function() {
-              // Set ons-splitter-side animation
-              this.parentElement.setAttribute('animation', ons.platform.isAndroid() ? 'overlay' : 'reveal');
-            };
-            const logout=()=>{
-                storage.removeItem("token") // Pass a key name to remove that key from storage.
-                storage.removeItem("userid") // Pass a key name to remove that key from storage.
-                checksession();
-                toast('logout successful')
-            }
-          </script>
-      
-          <style>
-            .profile-pic {
-              width: 200px;
-              background-color: #fff;
-              margin: 20px auto 10px;
-              border: 1px solid #999;
-              border-radius: 4px;
-            }
-      
-            .profile-pic > img {
-              display: block;
-              max-width: 100%;
-            }
-      
-            ons-list-item {
-              color: #444;
-            }
+        })
 
-          </style>
-        </ons-page>
-      </template>
-      
-      <template id="home.html">
-        <ons-page>
-            <div class="content">
-            <h1>Book for a Tricycle Service</h1>
-            <form id="service">
-              
-              <div class="text-center">
-                <div class="text-left" style="width: 50%;margin:0 auto">
-                  <p><label for="regular"><input name="type" type="radio" id="regular" value="regular" checked> Regular</label></p>
-                  <p><label for="senior"><input name="type" type="radio" id="senior" value="senior"> Senior Citizen</label></p>
-                  <p><label for="student"><input name="type" type="radio" id="student" value="student"> Student</label></p>
-                </div>
-                <label for="isbooking"><input name="isbooking" type="checkbox" id="isbooking" onchange="this.parentElement.nextElementSibling.style.display=(this.checked?'block':'none')" value="on"> Booking</label>
-                
-                <div id="bookfields" style="display:none;">
-                  
-                  <p>
-                    <ons-input
-                      class="inp"
-                      name="date"
-                        id="date"
-                        type="date"
-                        modifier="underbar"
-                    >
-                    </ons-input>
-                  </p>
-                  <p>
-                      <ons-input
-                        class="inp"
-                        name="time"
-                          id="time"
-                          type="time"
-                          modifier="underbar"
-                      >
-                      </ons-input>
-                    </p>
-                    <hr class="px-4" style="color: black;">
-                </div>
-              </div>
-                  <div style="display:flex;align-items:center;justify-content:center;color:gray">
-                    <span style="margin-right:1rem">Pick up location</span>
-                    <select class="location" style="width:30vw" name="pickup" placeholder="Pickup Location">
-                    </select>
-                  </div>
-                  <div style="display:flex;align-items:center;justify-content:center;color:gray">
-                    <span style="margin-right:1rem">Destination Location</span>
-                    <select class="location" style="width:30vw" name="destination" placeholder="Pickup Location">
-                    </select>
-                  </div>
-                  <p id="price"></ps>
-                    <p>
-                        <ons-input
-                        class="inp"
-                        oninput="getprice()"
-                        name="passengers_count"
-                            id="passengers_count"
-                            placeholder="Passengers Count"
-                            type="number"
-                            maximum="2"
-                            modifier="underbar"
-                        >
-                        </ons-input>
-                      </p>
-                      
-                  <p>
-                    <ons-input
-                    class="inp"
-                    name="notes"
-                        id="notes"
-                        placeholder="Notes ex. wearing black tshirt"
-                        type="text"
-                        modifier="underbar"
-                    >
-                    </ons-input>
-                  </p>
-            
-                <p>
-                <ons-button
-                class="inp but" onclick="set()">Set</ons-button>
-                </p>
-            </form>
-          </div>
-          <script>
-            const set=()=>{
-                let fd=$('#service').serialize();
-                ajaxreq({
-                  data:fd,
-                  url:'/api/service',
-                  type:'post',
-                  success:(res)=>{
-                    if(res.status=='success'){
-                      window.location.href="#home"
-                      toast(res.msg)
-                      transactions();
-                      clearfields();
-                    }
-                  },
-                  error:showinputerrors
-                })
-            }
-    $('#booking').submit((e)=>{
-        
-      })
-      
-          </script>
-          <style>
-            .intro {
-              text-align: center;
-              padding: 0 20px;
-              margin-top: 40px;
-            }
-            ons-card {
-              cursor: pointer;
-              color: #333;
-            }
-      
-            .card__title,
-            .card--material__title {
-              font-size: 20px;
-            }
-          </style>
-        </ons-page>
-      </template>
-    
-           
-      <template id="drivers.html">
-        <ons-page>
-                
-	    <div class="content">
-            <center>  
-              <table class="table-auto border-collapse w-full">
-                <thead>
-                  <tr class="rounded-lg text-sm font-medium text-gray-700 text-left" style="font-size: 0.9674rem">
-                    <th class="px-4 py-2 " style="background-color:#f8f8f8">Name</th>
-                    <th class="px-4 py-2 " style="background-color:#f8f8f8">Plate Number</th>
-                    <th class="px-4 py-2 " style="background-color:#f8f8f8">Contact Number</th>
-                  </tr>
-                </thead>
-                <tbody class="text-sm font-normal text-gray-700" id="tabledriver">
-                  
-                </tbody>
-              </table>
-            </center>
-        </div><!-- /content -->
-        </ons-page>
-      </template>
+      </script>
+      <style>
+        .intro {
+          text-align: center;
+          padding: 0 20px;
+          margin-top: 40px;
+        }
+
+        ons-card {
+          cursor: pointer;
+          color: #333;
+        }
+
+        .card__title,
+        .card--material__title {
+          font-size: 20px;
+        }
+      </style>
+    </ons-page>
+  </template>
 
 
-      <ons-modal id="mark-as-done" onclick="//fn.hideDialog('assign')">
-        <form>
-          <div style="text-align: center; margin-top: 100px; background-color:white;padding:3rem 0;color:black">
-            <input type="hidden" id="rate" value="5">
-            <h2>Rate Driver's Service</h2>
-              <div id="ratedriver"></div>
-              <textarea id="comment" style="width:50%;margin:3rem auto" name="comment" placeholder="Say something about transaction"></textarea>
-              <p>
-              <ons-button
-              class="inp but" onclick="markasdone()" >Done</ons-button>
-              </p>
-              <p>
-              <ons-button
-              class="inp but" onclick="fn.hideDialog('mark-as-done')" >Cancel</ons-button>
-              </p>
-          </div>
-      </form>
-      </ons-modal>
-      
-      <ons-modal id="changepass" onclick="">
-        <form id="frmchangepass">
-          <div style="text-align: center; margin-top: 100px; background-color:white;padding:3rem 0;color:black">
-            <h2>Change Password</h2>
-              <p>
-                <ons-input
-                class="inp" name="password" placeholder="New Password" type="password" modifier="underbar"></ons-input>
-              </p>
-              <p>
-                <ons-input
-                class="inp" name="password_confirmation" placeholder="Confirm Password" type="password" modifier="underbar"></ons-input>
-              </p>
-              <p>
-              <ons-button
-              class="inp but" onclick="changepass()" >Done</ons-button>
-              </p>
-              <p>
-              <ons-button
-              class="inp but" onclick="fn.hideDialog('changepass')" >Cancel</ons-button>
-              </p>
-          </div>
-      </form>
-      </ons-modal>
-      
-      <ons-modal id="viewdriver" onclick="">
-        <form>
-          <div style="text-align: center; margin-top: 100px; background-color:white;padding:3rem 0">
-            <input type="hidden"value="5">
-            <h2 style="color:black" id="drivername"></h2>
-              <img src="avatr.png" alt="" width="50%" style="margin:0 auto">
-              <div id="driverrate" style="margin-top:2rem"></div>
-              <div id="drivercomments" style="width:50%;height:3rem;margin:0 auto;overflow-y:auto;margin-top:2rem"></div>
-              <p>
-              <ons-button
-              class="inp but" onclick="fn.hideDialog('viewdriver')" >Done</ons-button>
-              </p>
-          </div>
-      </form>
-      </ons-modal>
+  <template id="drivers.html">
+    <ons-page>
 
-       
-      <ons-modal id="code" onclick="">
-        <form id="verify">
-          <div style="text-align: center; margin-top: 100px; background-color:white;padding:3rem 0;color:black">
-            <input type="hidden"  value="5">
-            <h2>Verify Phone Number</h2>
-              <div>
-                <p>
-                  <ons-input
-                  class="inp"
-                    name="code"
-                      placeholder="Enter code received"
-                      type="text"
-                      modifier="underbar"
-                  >
-                  </ons-input>
-                </p>
-              </div>
-              <!-- <p>
+      <div class="content">
+        <center>
+          <table class="table-auto border-collapse w-full">
+            <thead>
+              <tr class="rounded-lg text-sm font-medium text-gray-700 text-left" style="font-size: 0.9674rem">
+                <th class="px-4 py-2 " style="background-color:#f8f8f8">Name</th>
+                <th class="px-4 py-2 " style="background-color:#f8f8f8">Plate Number</th>
+                <th class="px-4 py-2 " style="background-color:#f8f8f8">Contact Number</th>
+              </tr>
+            </thead>
+            <tbody class="text-sm font-normal text-gray-700" id="tabledriver">
+
+            </tbody>
+          </table>
+        </center>
+      </div><!-- /content -->
+    </ons-page>
+  </template>
+
+
+  <ons-modal id="mark-as-done" onclick="//fn.hideDialog('assign')">
+    <form>
+      <div style="text-align: center; margin-top: 100px; background-color:white;padding:3rem 0;color:black">
+        <input type="hidden" id="rate" value="5">
+        <h2>Rate Driver's Service</h2>
+        <div id="ratedriver"></div>
+        <textarea id="comment" style="width:50%;margin:3rem auto" name="comment"
+          placeholder="Say something about transaction"></textarea>
+        <p>
+          <ons-button class="inp but" onclick="markasdone()">Done</ons-button>
+        </p>
+        <p>
+          <ons-button class="inp but" onclick="fn.hideDialog('mark-as-done')">Cancel</ons-button>
+        </p>
+      </div>
+    </form>
+  </ons-modal>
+
+  <ons-modal id="changepass" onclick="">
+    <form id="frmchangepass">
+      <div style="text-align: center; margin-top: 100px; background-color:white;padding:3rem 0;color:black">
+        <h2>Change Password</h2>
+        <p>
+          <ons-input class="inp" name="password" placeholder="New Password" type="password"
+            modifier="underbar"></ons-input>
+        </p>
+        <p>
+          <ons-input class="inp" name="password_confirmation" placeholder="Confirm Password" type="password"
+            modifier="underbar"></ons-input>
+        </p>
+        <p>
+          <ons-button class="inp but" onclick="changepass()">Done</ons-button>
+        </p>
+        <p>
+          <ons-button class="inp but" onclick="fn.hideDialog('changepass')">Cancel</ons-button>
+        </p>
+      </div>
+    </form>
+  </ons-modal>
+
+  <ons-modal id="viewdriver" onclick="">
+    <form>
+      <div style="text-align: center; margin-top: 100px; background-color:white;padding:3rem 0">
+        <input type="hidden" value="5">
+        <h2 style="color:black" id="drivername"></h2>
+        <img src="avatr.png" alt="" width="50%" style="margin:0 auto">
+        <div id="driverrate" style="margin-top:2rem"></div>
+        <div id="drivercomments" style="width:50%;height:3rem;margin:0 auto;overflow-y:auto;margin-top:2rem"></div>
+        <p>
+          <ons-button class="inp but" onclick="fn.hideDialog('viewdriver')">Done</ons-button>
+        </p>
+      </div>
+    </form>
+  </ons-modal>
+
+
+  <ons-modal id="code" onclick="">
+    <form id="verify">
+      <div style="text-align: center; margin-top: 100px; background-color:white;padding:3rem 0;color:black">
+        <input type="hidden" value="5">
+        <h2>Verify Phone Number</h2>
+        <div>
+          <p>
+            <ons-input class="inp" name="code" placeholder="Enter code received" type="text" modifier="underbar">
+            </ons-input>
+          </p>
+        </div>
+        <!-- <p>
               <ons-button
               class="inp but" onclick="resendcode()" >Resend Code</ons-button>
               </p> -->
-              <div class="flex justify-between w-1/2 mx-auto">
-                <ons-button
-                class="but w-1/3" onclick="fn.hideDialog('code')" >Cancel</ons-button>
-              <ons-button
-              class="but w-1/3" onclick="verify()" >Done</ons-button>
-              </div>
-          </div>
-      </form>
-      </ons-modal>
+        <div class="flex justify-between w-1/2 mx-auto">
+          <ons-button class="but w-1/3" onclick="fn.hideDialog('code')">Cancel</ons-button>
+          <ons-button class="but w-1/3" onclick="verify()">Done</ons-button>
+        </div>
+      </div>
+    </form>
+  </ons-modal>
 
-      <ons-modal id="report" onclick="">
-        <form id="frmreport">
-          <div style="text-align: center; margin-top: 100px; background-color:white;padding:3rem 0;color:black">
-            <input type="hidden" value="5">
-            <h2>Report Something</h2>
-              <div>
-                <p>
-                  <ons-input
-                  class="inp"
-                    name="subject"
-                      placeholder="Subject"
-                      type="text"
-                      modifier="underbar"
-                  >
-                  </ons-input>
-                </p>
-                <textarea style="width:50%;margin:1rem auto" rows="4" name="content" placeholder="Describe your report here.."></textarea>
-              </div>
-              <div class="flex justify-between w-1/2 mx-auto">
-              <ons-button
-              class="but w-1/3" onclick="report()" >Submit</ons-button>
-                <ons-button
-                class="but w-1/3" onclick="fn.hideDialog('report')" >Cancel</ons-button>
-              </div>
-          </div>
-      </form>
-      </ons-modal>
+  <ons-modal id="report" onclick="">
+    <form id="frmreport">
+      <div style="text-align: center; margin-top: 100px; background-color:white;padding:3rem 0;color:black">
+        <input type="hidden" value="5">
+        <h2>Report Something</h2>
+        <div>
+          <p>
+            <ons-input class="inp" name="subject" placeholder="Subject" type="text" modifier="underbar">
+            </ons-input>
+          </p>
+          <textarea style="width:50%;margin:1rem auto" rows="4" name="content"
+            placeholder="Describe your report here.."></textarea>
+        </div>
+        <div class="flex justify-between w-1/2 mx-auto">
+          <ons-button class="but w-1/3" onclick="report()">Submit</ons-button>
+          <ons-button class="but w-1/3" onclick="fn.hideDialog('report')">Cancel</ons-button>
+        </div>
+      </div>
+    </form>
+  </ons-modal>
 
-      <template id="transactions.html">
-        <ons-page>
-                
-    <div class="content">
+  <template id="transactions.html">
+    <ons-page>
+
+      <div class="content">
         <center>
-            
-      <table class="table-auto border-collapse w-full">
-        <thead>
-          <tr class="rounded-lg text-sm font-medium text-gray-700 text-left" style="font-size: 0.9674rem">
-            <th class="px-4 py-2 " style="background-color:#f8f8f8">Pickup Point</th>
-            <th class="px-4 py-2 " style="background-color:#f8f8f8">Destination</th>
-            <th class="px-4 py-2 " style="background-color:#f8f8f8">Assigned to</th>
-            <th class="px-4 py-2 " style="background-color:#f8f8f8">Passenger Count</th>
-            <th class="px-4 py-2 " style="background-color:#f8f8f8">Date Time</th>
-            <th class="px-4 py-2 " style="background-color:#f8f8f8">Price</th>
-            <th class="px-4 py-2 " style="background-color:#f8f8f8">Status</th>
-            <th class="px-4 py-2 " style="background-color:#f8f8f8">Notes</th>
-          </tr>
-        </thead>
-        <tbody class="text-sm font-normal text-gray-700" id="tabletransaction">
-          
-        </tbody>
-      </table>
-            
+
+          <table class="table-auto border-collapse w-full">
+            <thead>
+              <tr class="rounded-lg text-sm font-medium text-gray-700 text-left" style="font-size: 0.9674rem">
+                <th class="px-4 py-2 " style="background-color:#f8f8f8">Pickup Point</th>
+                <th class="px-4 py-2 " style="background-color:#f8f8f8">Destination</th>
+                <th class="px-4 py-2 " style="background-color:#f8f8f8">Assigned to</th>
+                <th class="px-4 py-2 " style="background-color:#f8f8f8">Passenger Count</th>
+                <th class="px-4 py-2 " style="background-color:#f8f8f8">Date Time</th>
+                <th class="px-4 py-2 " style="background-color:#f8f8f8">Price</th>
+                <th class="px-4 py-2 " style="background-color:#f8f8f8">Status</th>
+                <th class="px-4 py-2 " style="background-color:#f8f8f8">Notes</th>
+              </tr>
+            </thead>
+            <tbody class="text-sm font-normal text-gray-700" id="tabletransaction">
+
+            </tbody>
+          </table>
+
         </center>
       </div>
-        </ons-page>
-      </template>
-            
-      <template id="conf.html">
-        <ons-page>
-                
-    <div class="content">
-        
+    </ons-page>
+  </template>
+
+  <template id="conf.html">
+    <ons-page>
+
+      <div class="content">
+
         <p>
-        <ons-input
-        class="inp" name="server" id="server" placeholder="server" modifier="underbar"></ons-input>
+          <ons-input class="inp" name="server" id="server" placeholder="server" modifier="underbar"></ons-input>
         </p>
         <p>
-        <ons-button
-        class="inp but" onclick="setip()">Set</ons-button>
+          <ons-button class="inp but" onclick="setip()">Set</ons-button>
         </p>
       </div>
       <script>
-        function setip(){
-        server=document.querySelector('#server').value
-        storage.setItem("server", server )
-        back();
+        function setip() {
+          server = document.querySelector('#server').value
+          storage.setItem("server", server)
+          back();
 
         }
       </script>
-        </ons-page>
-      </template>
-        
-      
-      <template id="register.html">
-        <ons-page>
-          <ons-toolbar class="header">
-            <div class="left">
-              <ons-button onclick="back()">Login</ons-button>
-            </div>
-            
-            <div class="center"></div>
-          </ons-toolbar>
-                <div style="text-align: center; margin-top: 100px">
-                  <img src="logo.png" alt="logo" style="margin:0 auto">
-
-                    <h3 onclick="fn.pushPage({'id': 'conf.html', 'title': 'Configuration'})">Registration</h3>
-                    <form id="frmregister">
-                        <p>
-                            <ons-input
-                            class="inp"
-                              name="name"
-                                placeholder="Full Name"
-                                type="text"
-                                modifier="underbar"
-                            >
-                            </ons-input>
-                            </p>
-                        
-                        <p>
-                        <p>
-                            <ons-input
-                            class="inp"
-                            name="cpnum"
-                                placeholder="Contact Number"
-                                type="text"
-                                modifier="underbar"
-                            >
-                            </ons-input>
-                            </p>
-                        
-                        <p>
-                        <ons-input
-                        class="inp" name="username" placeholder="Username" modifier="underbar"></ons-input>
-                        </p>
-                    
-                        <p>
-                        <ons-input
-                        class="inp"
-                        name="password"
-                            placeholder="Password"
-                            type="password"
-                            modifier="underbar"
-                        >
-                        </ons-input>
-                        </p>
-                        <p>
-                        <ons-input
-                        class="inp"
-                        name="password_confirmation"
-                            placeholder="Confirm Password"
-                            type="password"
-                            modifier="underbar"
-                        >
-                        </ons-input>
-                        </p>
-                    
-                        <p>
-                        <ons-button
-                        class="inp but" onclick="register()">Register</ons-button>
-                        </p>
-                    </form>
-                </div>
-            <script>
-               
-            </script>
-        </ons-page>
-      </template>
-      
-      <template id="login.html">
-        <ons-page>
-          <ons-toolbar class="header">
-            <div class="left" style="display: none;">
-              <ons-back-button>Back</ons-back-button>
-            </div>
-            <div class="right" >
-              <ons-button onclick="fn.pushPage({'id': 'register.html', 'title': 'Registration'})">Register</ons-button>
-            </div>
-            <div class="center"></div>
-          </ons-toolbar>
-            <form id="frmlogin">
-                <div style="text-align: center; margin-top: 100px">
-                  <img src="logo.png" alt="logo" style="margin:0 auto">
-                    <h3>LOGIN</h3>
-                    
-                    <p>
-                    <ons-input
-                    class="inp" id="lusername" name="username" placeholder="Username" modifier="underbar"></ons-input>
-                    </p>
-                
-                    <p>
-                    <ons-input
-                        class="inp"
-                        id="lpassword"
-                        name="password"
-                        placeholder="Password"
-                        type="password"
-                        modifier="underbar"
-                    >
-                    </ons-input>
-                    </p>
-                
-                    <p>
-                    <ons-button
-                    class="inp but" onclick="login()">Sign in</ons-button>
-                    </p>
-                    <p>
-                    <ons-button
-                    class="inp but" onclick="fn.pushPage({'id': 'forgot.html', 'title': 'Forgot Password'})">Forgot Password</ons-button>
-                    </p>
-                </div>
-            </form>
-        <script>
-        </script>
     </ons-page>
-      </template>
-            
-      <template id="forgot.html">
-        <ons-page>
-          <ons-toolbar class="header">
-            <div class="left">
-              <ons-back-button>Back</ons-back-button>
-            </div>
-            <div class="center"></div>
-          </ons-toolbar>
-            <form id="frmforgot">
-                <div style="text-align: center; margin-top: 100px">
-                  <img src="logo.png" alt="logo" style="margin:0 auto">
-                    <h3>Forgot Pasword</h3>
-                    
-                    <p>
-                    <ons-input name="cpnum" id="fcpnum" placeholder="CP #" modifier="underbar"></ons-input>
-                    <ons-button onclick="sendcode()">Send Code</ons-button>
-                    </p>
-                    <p>
-                    <ons-input
-                        class="inp"
-                        id="code"
-                        name="code"
-                        placeholder="Code Recieved"
-                        type="text"
-                        modifier="underbar"
-                    >
-                    </ons-input>
-                    </p>
-                
-                    <p>
-                    <ons-button
-                    class="inp but" onclick="verifycode()">Verify</ons-button>
-                    </p>
-                </div>
-            </form>
-        <script>
-        </script>
-    </ons-page>
-      </template>
-        
-      <template id="profile.html">
-        <ons-page>
-          <ons-toolbar class="header">
-            <div class="left" style="color: white;"> 
-              <ons-back-button>Back</ons-back-button>
-            </div>
-            <div class="center"></div>
-          </ons-toolbar>
-            <form id="frmeditprofile">
-                <div style="text-align: center; margin-top: 200px">
-                <h3>Edit Profile</h3>
-                  
-                <p>
-                  <ons-input
-                  class="inp"
-                    name="name"
-                    id="edname"
-                      placeholder="Full Name"
-                      type="text"
-                      modifier="underbar"
-                  >
-                  </ons-input>
-                  </p>
+  </template>
 
-                  <p>
-                      <ons-input
-                      class="inp"
-                      name="cpnum"
-                          id="edcpnum"
-                          placeholder="Contact Number"
-                          type="text"
-                          modifier="underbar"
-                      >
-                      </ons-input>
-                      </p>
-                  
-                  <p>
-                    <p>
-                  <ons-input
-                  class="inp" name="username" id="edusername" placeholder="Username" modifier="underbar"></ons-input>
-                  </p>
-              
-                  <p>
-                  <ons-input
-                  class="inp"
-                  name="password"
-                      placeholder="Password"
-                      type="password"
-                      modifier="underbar"
-                  >
-                  </ons-input>
-                  </p>
-                  <p>
-                  <ons-input
-                  class="inp"
-                  name="password_confirmation"
-                      placeholder="Confirm Password"
-                      type="password"
-                      modifier="underbar"
-                  >
-                  </ons-input>
-                  </p>
-              
-                  <p>
-                  <ons-button
-                  class="inp but" onclick="editprofile()">Update</ons-button>
-                  </p>
-                </div>
-            </form>
-        <script>
-       
-        </script>
-    </ons-page>
-      </template>
 
-      
-      <style>
-        ons-splitter-side[animation=overlay] {
-          border-left: 1px solid #bbb;
-        }
-        .logo{
-            font-weight: bolder !important;
-            font-size: 3rem !important;
-            color:red;
-            text-align: center;
-        }
-        
-        .inp{
-            width: 50%;
-            margin: 1rem 0;
-        }
-        .but{
-            background-color:#4caf50;
-            color:white;
-            padding: .5rem;
-        }
-        .header{
-            background-color: #087f23;
-            height: 8vh;
-        }
-        .text-white{
-            color:white;
-        }
-        .content{
-            text-align: center;
-        }
-        h2{
-          font-size: x-large;
-          font-weight: bold ;
-          padding: 1rem 0;
-        }
-            
-  thead tr th:first-child { border-top-left-radius: 10px; border-bottom-left-radius: 10px;}
-  thead tr th:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px;}
-  
-  tbody tr td:first-child { border-top-left-radius: 5px; border-bottom-left-radius: 0px;}
-  tbody tr td:last-child { border-top-right-radius: 5px; border-bottom-right-radius: 0px;}
-  
-  
-      </style>
+  <template id="register.html">
+    <ons-page>
+      <ons-toolbar class="header">
+        <div class="left">
+          <ons-button onclick="back()">Login</ons-button>
+        </div>
+
+        <div class="center"></div>
+      </ons-toolbar>
+      <div style="text-align: center; margin-top: 100px">
+        <img src="logo.png" alt="logo" style="margin:0 auto">
+
+        <h3 onclick="fn.pushPage({'id': 'conf.html', 'title': 'Configuration'})">Registration</h3>
+        <form id="frmregister">
+          <p>
+            <ons-input class="inp" name="name" placeholder="Full Name" type="text" modifier="underbar">
+            </ons-input>
+          </p>
+
+          <p>
+          <p>
+            <ons-input class="inp" name="cpnum" placeholder="Contact Number" type="text" modifier="underbar">
+            </ons-input>
+          </p>
+
+          <p>
+            <ons-input class="inp" name="username" placeholder="Username" modifier="underbar"></ons-input>
+          </p>
+
+          <p>
+            <ons-input class="inp" name="password" placeholder="Password" type="password" modifier="underbar">
+            </ons-input>
+          </p>
+          <p>
+            <ons-input class="inp" name="password_confirmation" placeholder="Confirm Password" type="password"
+              modifier="underbar">
+            </ons-input>
+          </p>
+
+          <p>
+            <ons-button class="inp but" onclick="register()">Register</ons-button>
+          </p>
+        </form>
+      </div>
       <script>
-    const toast=(msg)=>{
-        
-        ons.notification.toast(String(msg), { timeout: 1000, animation: 'fall' })
+
+      </script>
+    </ons-page>
+  </template>
+
+  <template id="login.html">
+    <ons-page>
+      <ons-toolbar class="header">
+        <div class="left" style="display: none;">
+          <ons-back-button>Back</ons-back-button>
+        </div>
+        <div class="right">
+          <ons-button onclick="fn.pushPage({'id': 'register.html', 'title': 'Registration'})">Register</ons-button>
+        </div>
+        <div class="center"></div>
+      </ons-toolbar>
+      <form id="frmlogin">
+        <div style="text-align: center; margin-top: 100px">
+          <img src="logo.png" alt="logo" style="margin:0 auto">
+          <h3>LOGIN</h3>
+
+          <p>
+            <ons-input class="inp" id="lusername" name="username" placeholder="Username"
+              modifier="underbar"></ons-input>
+          </p>
+
+          <p>
+            <ons-input class="inp" id="lpassword" name="password" placeholder="Password" type="password"
+              modifier="underbar">
+            </ons-input>
+          </p>
+
+          <p>
+            <ons-button class="inp but" onclick="login()">Sign in</ons-button>
+          </p>
+          <p>
+            <ons-button class="inp but" onclick="fn.pushPage({'id': 'forgot.html', 'title': 'Forgot Password'})">Forgot
+              Password</ons-button>
+          </p>
+        </div>
+      </form>
+      <script>
+      </script>
+    </ons-page>
+  </template>
+
+  <template id="forgot.html">
+    <ons-page>
+      <ons-toolbar class="header">
+        <div class="left">
+          <ons-back-button>Back</ons-back-button>
+        </div>
+        <div class="center"></div>
+      </ons-toolbar>
+      <form id="frmforgot">
+        <div style="text-align: center; margin-top: 100px">
+          <img src="logo.png" alt="logo" style="margin:0 auto">
+          <h3>Forgot Pasword</h3>
+
+          <p>
+            <ons-input name="cpnum" id="fcpnum" placeholder="CP #" modifier="underbar"></ons-input>
+            <ons-button onclick="sendcode()">Send Code</ons-button>
+          </p>
+          <p>
+            <ons-input class="inp" id="code" name="code" placeholder="Code Recieved" type="text" modifier="underbar">
+            </ons-input>
+          </p>
+
+          <p>
+            <ons-button class="inp but" onclick="verifycode()">Verify</ons-button>
+          </p>
+        </div>
+      </form>
+      <script>
+      </script>
+    </ons-page>
+  </template>
+
+  <template id="profile.html">
+    <ons-page>
+      <ons-toolbar class="header">
+        <div class="left" style="color: white;">
+          <ons-back-button>Back</ons-back-button>
+        </div>
+        <div class="center"></div>
+      </ons-toolbar>
+      <form id="frmeditprofile">
+        <div style="text-align: center; margin-top: 200px">
+          <h3>Edit Profile</h3>
+
+          <p>
+            <ons-input class="inp" name="name" id="edname" placeholder="Full Name" type="text" modifier="underbar">
+            </ons-input>
+          </p>
+
+          <p>
+            <ons-input class="inp" name="cpnum" id="edcpnum" placeholder="Contact Number" type="text"
+              modifier="underbar">
+            </ons-input>
+          </p>
+
+          <p>
+          <p>
+            <ons-input class="inp" name="username" id="edusername" placeholder="Username"
+              modifier="underbar"></ons-input>
+          </p>
+
+          <p>
+            <ons-input class="inp" name="password" placeholder="Password" type="password" modifier="underbar">
+            </ons-input>
+          </p>
+          <p>
+            <ons-input class="inp" name="password_confirmation" placeholder="Confirm Password" type="password"
+              modifier="underbar">
+            </ons-input>
+          </p>
+
+          <p>
+            <ons-button class="inp but" onclick="editprofile()">Update</ons-button>
+          </p>
+        </div>
+      </form>
+      <script>
+
+      </script>
+    </ons-page>
+  </template>
+
+
+  <style>
+    ons-splitter-side[animation=overlay] {
+      border-left: 1px solid #bbb;
     }
-    const ajaxreq=(args)=>{
-        token=storage.getItem("token")
-        let ar={...args,
-          headers:{
-            Accept:'application/json',
-            Authorization:'Bearer ' + token
-          },
-        };
-        ar.type=args.type || 'get';
-        ar.url=server+args.url;
-        $.ajax(ar);
+
+    .logo {
+      font-weight: bolder !important;
+      font-size: 3rem !important;
+      color: red;
+      text-align: center;
+    }
+
+    .inp {
+      width: 50%;
+      margin: 1rem 0;
+    }
+
+    .but {
+      background-color: #4caf50;
+      color: white;
+      padding: .5rem;
+    }
+
+    .header {
+      background-color: #087f23;
+      height: 8vh;
+    }
+
+    .text-white {
+      color: white;
+    }
+
+    .content {
+      text-align: center;
+    }
+
+    h2 {
+      font-size: x-large;
+      font-weight: bold;
+      padding: 1rem 0;
+    }
+
+    thead tr th:first-child {
+      border-top-left-radius: 10px;
+      border-bottom-left-radius: 10px;
+    }
+
+    thead tr th:last-child {
+      border-top-right-radius: 10px;
+      border-bottom-right-radius: 10px;
+    }
+
+    tbody tr td:first-child {
+      border-top-left-radius: 5px;
+      border-bottom-left-radius: 0px;
+    }
+
+    tbody tr td:last-child {
+      border-top-right-radius: 5px;
+      border-bottom-right-radius: 0px;
+    }
+  </style>
+  <script>
+    const toast = (msg) => {
+
+      ons.notification.toast(String(msg), { timeout: 1000, animation: 'fall' })
+    }
+    const ajaxreq = (args) => {
+      token = storage.getItem("token")
+      let ar = {
+        ...args,
+        headers: {
+          Accept: 'application/json',
+          Authorization: 'Bearer ' + token
+        },
       };
-      
-      const driverlist=()=>{
-        ajaxreq({
-         url: "/api/drivers",
-         type:'get',
-         success: function(result){
-           if(result.drivers)
-           {
-             $('#title-filter-menu').html('<option>Select Driver...</option>');
-             $('#tabledriver').html('');
-             result.drivers.map((driver)=>{
-               $('#title-filter-menu').append('<option value="' + driver.id + '">' + driver.name + '</option>')
+      ar.type = args.type || 'get';
+      ar.url = server + args.url;
+      $.ajax(ar);
+    };
+
+    const driverlist = () => {
+      ajaxreq({
+        url: "/api/drivers",
+        type: 'get',
+        success: function (result) {
+          if (result.drivers) {
+            $('#title-filter-menu').html('<option>Select Driver...</option>');
+            $('#tabledriver').html('');
+            result.drivers.map((driver) => {
+              $('#title-filter-menu').append('<option value="' + driver.id + '">' + driver.name + '</option>')
               $('#tabledriver').append(`
                 <tr>
                     <td class="px-4 py-4" style="color:blue" onclick="viewdriver(${driver.id})">${driver.name}</td>
@@ -800,469 +713,470 @@
                     <td class="px-4 py-4" >${driver.cpnum}</td>
                 </tr>
               `)
-             })
-           }
-         },
-         error:(res)=>{
-            $('#tabledriver').html('error fetching drivers list');
-         }
-       })
-     }
-        
-     const viewdriver=(id)=>{
+            })
+          }
+        },
+        error: (res) => {
+          $('#tabledriver').html('error fetching drivers list');
+        }
+      })
+    }
+
+    const viewdriver = (id) => {
       fn.showDialog('viewdriver')
       $('#drivername').html('')
       $('#driverrate').html('')
       $('#drivercomments').html('')
       ajaxreq({
-        url: "/api/driver/"+id,
-        type:'get',
-        success: function(result){
+        url: "/api/driver/" + id,
+        type: 'get',
+        success: function (result) {
           $('#drivername').html(result.driver.name)
-          let smileys="";
-          for(let i=1;i<=5;i++){
-            let op=i<=result.rate.rate?1:0.3;
-            smileys+=`<div class="emotion-style-ratedriver" data-index="1" style="opacity: ${op};">😊</div>`;
+          let smileys = "";
+          for (let i = 1; i <= 5; i++) {
+            let op = i <= result.rate.rate ? 1 : 0.3;
+            smileys += `<div class="emotion-style-ratedriver" data-index="1" style="opacity: ${op};">😊</div>`;
           }
-          if(result.rate.count==0) smileys="No rating yet";
-          let rate=`<div class="emotion-container-ratedriver" style="display:flex;color:black;justify-content:center;padding:1rem">${smileys}</div>`;
-          if(result.rate.count!=0)rate+=`<div>rated by: ${result.rate.count}</div>`;
-         $('#driverrate').html(rate)
+          if (result.rate.count == 0) smileys = "No rating yet";
+          let rate = `<div class="emotion-container-ratedriver" style="display:flex;color:black;justify-content:center;padding:1rem">${smileys}</div>`;
+          if (result.rate.count != 0) rate += `<div>rated by: ${result.rate.count}</div>`;
+          $('#driverrate').html(rate)
 
-          result.comments.map((comment)=>{
+          result.comments.map((comment) => {
             $('#drivercomments').append(`<div style="height:3rem;width:50vw;color:gray">"${comment}"</div>`)
           })
         },
       })
-     }
-     
-     const transactions=()=>{
-        ajaxreq({
-         url: "/api/transactions",
-         type:'get',
-         success: function(result){
-           console.log(result)
-           if(result.transactions){
-             $('#tabletransaction').html('')
-             result.transactions.map((transaction)=>{
-               let date=new Date(transaction.created_at)
-               //date=`${date.getMonth()}/${date.getDate()}/${date.getFullYear()}`
-               let action=transaction.status=='assigned'?`<button class="bg-teal-500 text-white px-6 py-2 rounded font-medium mx-3 hover:bg-red-600 transition duration-200 each-in-out" onclick="done(${transaction.id})" >Done</button>`:''
-               action+=transaction.status=='pending'?`<button class="bg-red-500 text-white px-6 py-2 rounded font-medium mx-3 hover:bg-red-600 transition duration-200 each-in-out" onclick="cancel(${transaction.id})" >Cancel</button>`:''
-                let drivers=[];
-               if(transaction.drivers.length>0){
-                transaction.drivers.map((driver)=>{drivers.push(driver.name)})
-               }
-                
-             $('#tabletransaction').append(`
+    }
+
+    const transactions = () => {
+      ajaxreq({
+        url: "/api/transactions",
+        type: 'get',
+        success: function (result) {
+          console.log(result)
+          if (result.transactions) {
+            $('#tabletransaction').html('')
+            result.transactions.map((transaction) => {
+              let date = new Date(transaction.created_at)
+              //date=`${date.getMonth()}/${date.getDate()}/${date.getFullYear()}`
+              let action = transaction.status == 'assigned' ? `<button class="bg-teal-500 text-white px-6 py-2 rounded font-medium mx-3 hover:bg-red-600 transition duration-200 each-in-out" onclick="done(${transaction.id})" >Done</button>` : ''
+              action += transaction.status == 'pending' ? `<button class="bg-red-500 text-white px-6 py-2 rounded font-medium mx-3 hover:bg-red-600 transition duration-200 each-in-out" onclick="cancel(${transaction.id})" >Cancel</button>` : ''
+              let drivers = [];
+              if (transaction.drivers.length > 0) {
+                transaction.drivers.map((driver) => { drivers.push(driver.name) })
+              }
+
+              $('#tabletransaction').append(`
                <tr>
                    <td class="px-4 py-4">${transaction.loc1.name}</td>
                    <td class="px-4 py-4">${transaction.loc2.name}</td>
                    <td class="px-4 py-4">${drivers.join(', ')}</td>
                    <td class="px-4 py-4">${transaction.passengers_count}</td>
-                   <td class="px-4 py-4">${transaction.date||''} ${transaction.time||''}</td>
+                   <td class="px-4 py-4">${transaction.date || ''} ${transaction.time || ''}</td>
                    <td class="px-4 py-4">${transaction.price}</td>
                    <td class="px-4 py-4">${transaction.status}</td>
                    <td class="px-4 py-4">${transaction.notes}</td>
                    <td class="px-4 py-4">${action}</td>
                </tr>
              `)
-             })
-           }
-         },
-         error:(res)=>{
-            $('#tabletransaction').html('error fetching transaction list')
-         }
-       })
-     }
-     const clearfields=()=>{
-       $('input[type="text"]').val('')
-     }
-     const cancel=(id)=>{
+            })
+          }
+        },
+        error: (res) => {
+          $('#tabletransaction').html('error fetching transaction list')
+        }
+      })
+    }
+    const clearfields = () => {
+      $('input[type="text"]').val('')
+    }
+    const cancel = (id) => {
       ajaxreq({
-        url: "/api/transaction/"+id+"/cancel",
-        success: function(res){
+        url: "/api/transaction/" + id + "/cancel",
+        success: function (res) {
           console.log(res)
-          if(res.status=='success'){
+          if (res.status == 'success') {
             toast("canceled successfully")
             transactions();
           }
         },
-        error:(res)=>{
-            toast("an error occured")
+        error: (res) => {
+          toast("an error occured")
         }
       })
-     }
-          const back=()=>{
-            $('ons-back-button').click();
-          }
-        const showModal=()=> {
-            var modal = document.querySelector('ons-modal');
-            modal.show();
-            }
-        const checksession=()=>{
-            showModal()
-            //fn.pushPage({'id': 'loader.html'})
-            token=storage.getItem("token")
-            var modal = document.querySelector('ons-modal');
-            $.ajax({
-                url: server+"/api/checksession",
-                type:'get',
-                headers:{
-                Accept:'application/json',
-                Authorization:'Bearer ' + token
-                },
-                success:(res)=>{
-                  if(storage.getItem("acctype")=='admin')
-                    window.location.href="admin.html"
-                    if(storage.getItem("acctype")=='driver')
-                      window.location.href="driver.html"
-                    modal.hide()
-                    loadlocations()
-                },
-                error: function(result){
-                    modal.hide()
-                    fn.pushPage({'id': 'login.html', 'title': 'Buttons'})
-                },
-            });
-            }
-            
-    const showinputerrors=(res)=>{
-        if(res.status==422){
-          res.responseJSON.errors  &&
-          Object.entries(res.responseJSON.errors).map(([name,val])=>{
+    }
+    const back = () => {
+      $('ons-back-button').click();
+    }
+    const showModal = () => {
+      var modal = document.querySelector('ons-modal');
+      modal.show();
+    }
+    const checksession = () => {
+      showModal()
+      //fn.pushPage({'id': 'loader.html'})
+      token = storage.getItem("token")
+      var modal = document.querySelector('ons-modal');
+      $.ajax({
+        url: server + "/api/checksession",
+        type: 'get',
+        headers: {
+          Accept: 'application/json',
+          Authorization: 'Bearer ' + token
+        },
+        success: (res) => {
+          if (storage.getItem("acctype") == 'admin')
+            window.location.href = "admin.html"
+          if (storage.getItem("acctype") == 'driver')
+            window.location.href = "driver.html"
+          modal.hide()
+          loadlocations()
+        },
+        error: function (result) {
+          modal.hide()
+          fn.pushPage({ 'id': 'login.html', 'title': 'Buttons' })
+        },
+      });
+    }
+
+    const showinputerrors = (res) => {
+      if (res.status == 422) {
+        res.responseJSON.errors &&
+          Object.entries(res.responseJSON.errors).map(([name, val]) => {
             ons.notification.toast(String(val), { timeout: 1000, animation: 'fall' })
-            console.log('[name='+val+']')
+            console.log('[name=' + val + ']')
             //$('[name='+name+']').css({'color':'red'})
           })
+      }
+    }
+
+    const login = () => {
+      $.ajax({
+        url: server + "/api/login",
+        type: "post",
+        headers: {
+          Accept: 'application/json'
+        },
+        data: $("#frmlogin").serialize(),
+        success: function (result) {
+          console.log(result)
+          storage.setItem("token", result.token)
+          storage.setItem("userid", result.user.id)
+          storage.setItem("acctype", result.user.acctype)
+          if (result.user.acctype == 'admin')
+            window.location.href = "admin.html"
+          if (result.user.acctype == 'driver')
+            window.location.href = "driver.html"
+          back();
+          ons.notification.toast('Login Successful', { timeout: 1000, animation: 'fall' })
+          transactions();
+          clearfields();
+          loadlocations();
+        },
+        error: (e) => {
+          showinputerrors(e)
+          if (e.responseJSON.msg) {
+            toast(e.responseJSON.msg)
+            fn.showDialog('code')
+          }
+        }
+      });
+    }
+
+    const register = () => {
+      $.ajax({
+        url: server + "/api/register",
+        type: "post",
+        headers: {
+          Accept: 'application/json',
+        },
+        data: $("#frmregister").serialize(),
+        success: function (result) {
+          //back();
+          fn.showDialog('code')
+          //toast('Registration Successful')
+          // checksession();
+          //window.location.reload();
+          clearfields();
+        },
+        error: showinputerrors
+      });
+    }
+    $('document').ready((e) => {
+      driverlist();
+      transactions();
+      checksession();
+    })
+  </script>
+
+  <script>
+    window.fn = {};
+    window.fn.showDialog = function (id) {
+      var elem = document.getElementById(id);
+      if (id === 'popover-dialog') {
+        elem.show(infoButton);
+      } else {
+        elem.show();
+        if (id === 'modal-dialog') {
+          clearTimeout(timeoutID);
+          timeoutID = setTimeout(function () { fn.hideDialog(id) }, 2000);
         }
       }
-           
-    const login=()=>{
-        $.ajax({
-          url: server+"/api/login",
-          type:"post",
-          headers:{
-            Accept:'application/json'
-          },
-          data:$("#frmlogin").serialize(),
-          success: function(result){
-              console.log(result)
-                storage.setItem("token", result.token)
-                storage.setItem("userid", result.user.id)
-                storage.setItem("acctype", result.user.acctype)
-                if(result.user.acctype=='admin')
-                  window.location.href="admin.html"
-                if(result.user.acctype=='driver')
-                  window.location.href="driver.html"
-                back(); 
-                ons.notification.toast('Login Successful', { timeout: 1000, animation: 'fall' })
-                transactions();
-                clearfields();
-                loadlocations();
-            },
-          error: (e)=>{
-            showinputerrors(e)
-            if(e.responseJSON.msg){
-              toast(e.responseJSON.msg)
-              fn.showDialog('code')
-            }
-          }
-      });
-    }
-     
-    const register=()=>{
-        $.ajax({
-            url: server+"/api/register",
-            type:"post",
-            headers:{
-              Accept:'application/json',
-            },
-            data:$("#frmregister").serialize(),
-            success: function(result){
-                //back();
-                fn.showDialog('code')
-              //toast('Registration Successful')
-              // checksession();
-              //window.location.reload();
-              clearfields();
-              },
-            error:showinputerrors
-        });
-    }
-          $('document').ready((e)=>{
-                driverlist();
-                transactions();
-                checksession();
-          })
-      </script>
+    };
+    window.fn.toggleMenu = function () {
+      document.getElementById('appSplitter').left.toggle();
+    };
 
-      <script>
-        window.fn = {};
-        window.fn.showDialog = function (id) {
-          var elem = document.getElementById(id);
-          if (id === 'popover-dialog') {
-            elem.show(infoButton);
-          } else {
-            elem.show();
-            if (id === 'modal-dialog') {
-              clearTimeout(timeoutID);
-              timeoutID = setTimeout(function() { fn.hideDialog(id) }, 2000);
-            }
-          }
-        };
-        window.fn.toggleMenu = function () {
-          document.getElementById('appSplitter').left.toggle();
-        };
-        
-        window.fn.loadView = function (index) {
-          document.getElementById('appTabbar').setActiveTab(index);
-          document.getElementById('sidemenu').close();
-        };
-        
-        window.fn.loadLink = function (url) {
-          window.open(url, '_blank');
-        };
-        
-        window.fn.pushPage = function (page, anim) {
-          if (anim) {
-            document.getElementById('appNavigator').pushPage(page.id, { data: { title: page.title }, animation: anim });
-          } else {
-            document.getElementById('appNavigator').pushPage(page.id, { data: { title: page.title } });
-          }
-        };
-        window.fn.hideDialog = function (id) {
-          document.getElementById(id).hide();
-        };
-        let transid;
-     const done=(id)=>{
-       transid=id;
+    window.fn.loadView = function (index) {
+      document.getElementById('appTabbar').setActiveTab(index);
+      document.getElementById('sidemenu').close();
+    };
+
+    window.fn.loadLink = function (url) {
+      window.open(url, '_blank');
+    };
+
+    window.fn.pushPage = function (page, anim) {
+      if (anim) {
+        document.getElementById('appNavigator').pushPage(page.id, { data: { title: page.title }, animation: anim });
+      } else {
+        document.getElementById('appNavigator').pushPage(page.id, { data: { title: page.title } });
+      }
+    };
+    window.fn.hideDialog = function (id) {
+      document.getElementById(id).hide();
+    };
+    let transid;
+    const done = (id) => {
+      transid = id;
       fn.showDialog('mark-as-done')
-     }
-       // the emotions can be an array 
-      const emotionsArray = ['angry','disappointed','meh', 'happy', 'inLove'];
-      // or a single one
-      //var emotionsArray = ['happy'];
-      jQuery("#ratedriver").emotionsRating({
-        emotionSize: 30,
-        bgEmotion: 'happy',
-        emotions: emotionsArray,
-        color: '#FF0066', //the color must be expressed with a css code
-            initialRating:$('#rate').val() , //initialize the rating number
-        disabled: false, //set if the rating can be changed or not, default is false
-        onUpdate: (value)=>{$('#rate').val(value)} //set value changed event handler
-      });
-      const markasdone=()=>{
-        ajaxreq({
-          url: "/api/rateservice/"+transid,
-          type:'patch',
-          data:{rate:$('#rate').val(),comment:$('#comment').val()},
-          success: function(res){
-            console.log(res)
-            toast(res.msg)
-            transactions();
-            fn.hideDialog('mark-as-done')
-          },
-          error:(res)=>{
-              toast("an error occured")
-          }
-        })
-      }
-      function loadacc(){
-        ajaxreq({
-          url: "/api/myaccount",
-          success: function(res){
-            console.log(res)
-            if(res.status=='successful'){
-              $('#edname').val(res.profile.name??'N/A')
-              $('#edcpnum').val(res.user.cpnum)
-              $('#edusername').val(res.user.username)
-            }
-          },
-          error:(res)=>{
-              toast("an error occured")
-          }
-        })
-      }
-      const editprofile=()=>{
-        ajaxreq({
-          url: "/api/myaccount",
-          type:'patch',
-          data:$("#frmeditprofile").serialize(),
-          success: function(res){
-            console.log(res)
-            if(res.status=='successful'){
-              toast(res.msg);
-              clearfields();
-              back();
-            }
-          },
-          error:(res)=>{
-              toast("an error occured")
-          }
-        })
-      }
-      const verify=()=>{
-        ajaxreq({
-          url: "/api/verify",
-          type:'post',
-          data:$("#verify").serialize(),
-          success: function(res){
-            if(res.status=='success'){
-              toast("Registration successful")
-              window.location.reload();
-            }
-          },
-          error:(res)=>{
-            showinputerrors(res)
-            //toast("an error occured")
-          }
-        })
-      }
-      const verifycode=()=>{
-        ajaxreq({
-          url: "/api/verifycode",
-          type:'post',
-          data:$("#frmforgot").serialize(),
-          success: function(res){
-            if(res.status=='success'){
-              fn.showDialog('changepass')
-            }
-          },
-          error:(err)=>{
-            showinputerrors(err)
-            err.responseJSON.msg && toast(err.responseJSON.msg)
-            //toast("an error occured")
-          }
-        })
-      }
-      const changepass=()=>{
-       // Create an FormData object 
-        var fd = new FormData(document.getElementById('frmforgot'));
-        let fd2 = $("#frmchangepass").serializeArray();
-        for (let i=0; i<fd2.length; i++)
-            fd.append(fd2[i].name, fd2[i].value);
- 
-        ajaxreq({
-          url: "/api/changepass",
-          type:'post',
-          data:fd,
-          processData: false,
-          contentType: false,
-          success: function(res){
-            res.msg && toast(res.msg)
-            fn.hideDialog('changepass')
-            window.location.reload()
-          },
-          error:(res)=>{
-            showinputerrors(res)
-            //toast("an error occured")
-          }
-        })
-      }
-      const sendcode=()=>{
-        ajaxreq({
-          url: "/api/resendcode",
-          type:'post',
-          data:$("#frmforgot").serialize(),
-          success:(res)=>{
-            res.msg && toast(res.msg)
-            //fn.showDialog('changepass')
-          },
-          error:(err)=>{
-            if(err.responseJSON.msg){
-              toast(err.responseJSON.msg)
-            }
-          }
-        })
-      }
-      let prices=[];
-      let distances2=[];
-      let settings={};
+    }
+    // the emotions can be an array 
+    const emotionsArray = ['angry', 'disappointed', 'meh', 'happy', 'inLove'];
+    // or a single one
+    //var emotionsArray = ['happy'];
+    jQuery("#ratedriver").emotionsRating({
+      emotionSize: 30,
+      bgEmotion: 'happy',
+      emotions: emotionsArray,
+      color: '#FF0066', //the color must be expressed with a css code
+      initialRating: $('#rate').val(), //initialize the rating number
+      disabled: false, //set if the rating can be changed or not, default is false
+      onUpdate: (value) => { $('#rate').val(value) } //set value changed event handler
+    });
+    const markasdone = () => {
       ajaxreq({
-        url: "/api/getsettings",
-        success:(res)=>{
-          settings=res.settings
+        url: "/api/rateservice/" + transid,
+        type: 'patch',
+        data: { rate: $('#rate').val(), comment: $('#comment').val() },
+        success: function (res) {
+          console.log(res)
+          toast(res.msg)
+          transactions();
+          fn.hideDialog('mark-as-done')
+        },
+        error: (res) => {
+          toast("an error occured")
         }
       })
-      const loadlocations=()=>{
-        
+    }
+    function loadacc() {
+      ajaxreq({
+        url: "/api/myaccount",
+        success: function (res) {
+          console.log(res)
+          if (res.status == 'successful') {
+            $('#edname').val(res.profile.name ?? 'N/A')
+            $('#edcpnum').val(res.user.cpnum)
+            $('#edusername').val(res.user.username)
+          }
+        },
+        error: (res) => {
+          toast("an error occured")
+        }
+      })
+    }
+    const editprofile = () => {
+      ajaxreq({
+        url: "/api/myaccount",
+        type: 'patch',
+        data: $("#frmeditprofile").serialize(),
+        success: function (res) {
+          console.log(res)
+          if (res.status == 'successful') {
+            toast(res.msg);
+            clearfields();
+            back();
+          }
+        },
+        error: (res) => {
+          toast("an error occured")
+        }
+      })
+    }
+    const verify = () => {
+      ajaxreq({
+        url: "/api/verify",
+        type: 'post',
+        data: $("#verify").serialize(),
+        success: function (res) {
+          if (res.status == 'success') {
+            toast("Registration successful")
+            window.location.reload();
+          }
+        },
+        error: (res) => {
+          showinputerrors(res)
+          //toast("an error occured")
+        }
+      })
+    }
+    const verifycode = () => {
+      ajaxreq({
+        url: "/api/verifycode",
+        type: 'post',
+        data: $("#frmforgot").serialize(),
+        success: function (res) {
+          if (res.status == 'success') {
+            fn.showDialog('changepass')
+          }
+        },
+        error: (err) => {
+          showinputerrors(err)
+          err.responseJSON.msg && toast(err.responseJSON.msg)
+          //toast("an error occured")
+        }
+      })
+    }
+    const changepass = () => {
+      // Create an FormData object 
+      var fd = new FormData(document.getElementById('frmforgot'));
+      let fd2 = $("#frmchangepass").serializeArray();
+      for (let i = 0; i < fd2.length; i++)
+        fd.append(fd2[i].name, fd2[i].value);
+
+      ajaxreq({
+        url: "/api/changepass",
+        type: 'post',
+        data: fd,
+        processData: false,
+        contentType: false,
+        success: function (res) {
+          res.msg && toast(res.msg)
+          fn.hideDialog('changepass')
+          window.location.reload()
+        },
+        error: (res) => {
+          showinputerrors(res)
+          //toast("an error occured")
+        }
+      })
+    }
+    const sendcode = () => {
+      ajaxreq({
+        url: "/api/resendcode",
+        type: 'post',
+        data: $("#frmforgot").serialize(),
+        success: (res) => {
+          res.msg && toast(res.msg)
+          //fn.showDialog('changepass')
+        },
+        error: (err) => {
+          if (err.responseJSON.msg) {
+            toast(err.responseJSON.msg)
+          }
+        }
+      })
+    }
+    let prices = [];
+    let distances2 = [];
+    let settings = {};
+    ajaxreq({
+      url: "/api/getsettings",
+      success: (res) => {
+        settings = res.settings
+      }
+    })
+    const loadlocations = () => {
+
       ajaxreq({
         url: "/api/getlocations",
-        success: function(res){
-          if(res.status=='success'){
-            if(res.locations){
-              $('.location')[0].innerHTML="";
-              $('.location')[1].innerHTML="";
-              
-             res.locations.map((loc,ind)=>{
+        success: function (res) {
+          if (res.status == 'success') {
+            if (res.locations) {
+              $('.location')[0].innerHTML = "";
+              $('.location')[1].innerHTML = "";
+
+              res.locations.map((loc, ind) => {
                 console.log(loc)
-                $('.location')[0].innerHTML+=`
+                $('.location')[0].innerHTML += `
                 <option value="${loc.id}">${loc.name}</option>
                 `
-                $('.location')[1].innerHTML+=`
+                $('.location')[1].innerHTML += `
                 <option value="${loc.id}">${loc.name}</option>
                 `
-                prices[loc.id]=loc.distance;
-                distances2[loc.id]=loc.distance2;
+                prices[loc.id] = loc.distance;
+                distances2[loc.id] = loc.distance2;
               })
-              
-              $('.location')[0].onchange=getprice;
-              $('.location')[1].onchange=getprice;
-              $('[name="type"]').change(()=>getprice());
-              
+
+              $('.location')[0].onchange = getprice;
+              $('.location')[1].onchange = getprice;
+              $('[name="type"]').change(() => getprice());
+
             }
           }
         },
-        error:(err)=>{
+        error: (err) => {
         }
       })
-      }
-      loadlocations();
-      const getprice=()=>{
-        let n1=prices[$('.location')[0].value];
-        let n2=prices[$('.location')[1].value];
-        let n3=distances2[$('.location')[0].value];
-        let n4=distances2[$('.location')[1].value];
-        console.log(n1,n2)
-        
-        let type=$("input[type='radio'][name='type']:checked").val();
-        let mult=(type!='regular')?.75:1
-        let tprice=0;
-        if(n1>n2) tprice=(n1-n2+n3+n4)*settings.price;
-        if(n1<=n2) tprice=(n2-n1+n3+n4)*settings.price;
+    }
+    loadlocations();
+    const getprice = () => {
+      let n1 = prices[$('.location')[0].value];
+      let n2 = prices[$('.location')[1].value];
+      let n3 = distances2[$('.location')[0].value];
+      let n4 = distances2[$('.location')[1].value];
+      console.log(n1, n2)
 
-        
-        
-          let a=$('#passengers_count').val()!=''?$('#passengers_count').val():1;
-          $('#price').html("price: "+(tprice*a)+ " pesos")
-        
-        //else{
-        //  tprice=tprice*1.5*mult;
-        //  $('#price').html("price: "+tprice+ " pesos")
-        //} 
-        if(n1==n2)$('#price').html("pick up and destination should not be the same");
-      }
-      const report=()=>{
-        ajaxreq({
-          url: "/api/report",
-          type:'post',
-          data:$("#frmreport").serialize(),
-          success:(res)=>{
-            res.message && toast(res.message)
-            fn.hideDialog('report')
-            clearfields()
-          },
-          error:(err)=>{
-            showinputerrors(err)
-            if(err.responseJSON.msg){
-              toast(err.responseJSON.msg)
-            }
+      let type = $("input[type='radio'][name='type']:checked").val();
+      let mult = (type != 'regular') ? .75 : 1
+      let tprice = 0;
+      if (n1 > n2) tprice = (n1 - n2 + n3 + n4) * settings.price;
+      if (n1 <= n2) tprice = (n2 - n1 + n3 + n4) * settings.price;
+
+
+
+      let a = $('#passengers_count').val() != '' ? $('#passengers_count').val() : 1;
+      $('#price').html("price: " + (tprice * a) + " pesos")
+
+      //else{
+      //  tprice=tprice*1.5*mult;
+      //  $('#price').html("price: "+tprice+ " pesos")
+      //} 
+      if (n1 == n2) $('#price').html("pick up and destination should not be the same");
+    }
+    const report = () => {
+      ajaxreq({
+        url: "/api/report",
+        type: 'post',
+        data: $("#frmreport").serialize(),
+        success: (res) => {
+          res.message && toast(res.message)
+          fn.hideDialog('report')
+          clearfields()
+        },
+        error: (err) => {
+          showinputerrors(err)
+          if (err.responseJSON.msg) {
+            toast(err.responseJSON.msg)
           }
-        })
-      }
-      
-      </script>
+        }
+      })
+    }
+
+  </script>
 
 </body>
+
 </html>
